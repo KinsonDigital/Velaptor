@@ -38,9 +38,11 @@ public class AtlasLoaderTests
     private const string AtlasContentName = "test-atlas";
     private const string FakeJSONData = "fake-json-data";
     private const uint AtlasTextureId = 123;
+
     private static readonly string AtlasDirPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows)
-            ? "C:/Content/Atlas"
-            : "/Content/Atlas";
+        ? "C:/Content/Atlas"
+        : "/Content/Atlas";
+
     private static readonly string AtlasImageFilePath = $"{AtlasDirPath}/{AtlasContentName}{AtlasImageExtension}";
     private static readonly string AtlasDataFilePath = $"{AtlasDirPath}/{AtlasContentName}{AtlasDataExtension}";
     private readonly ITextureFactory mockTextureFactory;
@@ -178,7 +180,7 @@ public class AtlasLoaderTests
         // Arrange & Act
         var act = () =>
         {
-           _ = new AtlasLoader(
+            _ = new AtlasLoader(
                 this.mockTextureFactory,
                 this.mockAtlasDataFactory,
                 this.mockReactableFactory,
@@ -502,7 +504,7 @@ public class AtlasLoaderTests
     }
 
     [Fact]
-    public void Unload_WhenInvoked_UnloadsAtlas()
+    public void Unload_WhenInvokedWithNullAtlasTexture_UnloadsAtlas()
     {
         // Arrange
         this.mockAtlasData.Texture.Returns(_ => this.mockAtlasTexture);
@@ -510,9 +512,9 @@ public class AtlasLoaderTests
 
         this.mockAtlasTexture.FilePath.Returns(AtlasImageFilePath);
         this.mockAtlasDataFactory.Create(Arg.Any<ITexture>(),
-            Arg.Any<IList<AtlasSubTextureData>>(),
-            Arg.Any<string>(),
-            Arg.Any<string>())
+                Arg.Any<IList<AtlasSubTextureData>>(),
+                Arg.Any<string>(),
+                Arg.Any<string>())
             .Returns(this.mockAtlasData);
 
         var sut = CreateSystemUnderTest();
@@ -550,7 +552,6 @@ public class AtlasLoaderTests
         // Assert
         this.mockDisposeTextureReactable.DidNotReceive().Push(Arg.Any<Guid>(), Arg.Any<DisposeTextureData>());
     }
-
     #endregion
 
     #region Indirect Tests
@@ -595,12 +596,7 @@ public class AtlasLoaderTests
 
         for (var i = 0; i < 2; i++)
         {
-            items.Add(new AtlasSubTextureData
-            {
-                Name = $"sub-texture{i}",
-                Bounds = new Rectangle(i + 1, i + 2, i + 3, i + 4),
-                FrameIndex = i,
-            });
+            items.Add(new AtlasSubTextureData { Name = $"sub-texture{i}", Bounds = new Rectangle(i + 1, i + 2, i + 3, i + 4), FrameIndex = i, });
         }
 
         return items.ToArray();
