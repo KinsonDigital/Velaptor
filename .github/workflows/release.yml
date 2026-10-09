@@ -264,7 +264,7 @@ jobs:
     needs: [get_and_validate_version, validate_release, build_velaptor, build_sample_projects,
       build_velaptor_aseprite, build_velaptor_templates, perform_release]
     if: ${{ inputs.dry-run == false }}
-    uses: KinsonDigital/Infrastructure/.github/workflows/process-milestone.yml@acc7aa3997697717943e56c439f7b529d1e1d1ba # v19.0.0
+    uses: KinsonDigital/Infrastructure/.github/workflows/process-milestone.yml@5dade832543507f6ee8f9123794ca7dd3b317e67 # v19.0.1
     with:
       owner-name: ${{ vars.ORGANIZATION_NAME }}
       repo-name: ${{ vars.PROJECT_NAME }}
