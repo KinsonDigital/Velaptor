@@ -60,7 +60,7 @@ public sealed class DropDown : Control
                 this.mouseClickDisabled = data.IsExpanded && data.ExpandedDropDownId != this.id;
                 this.clickConsumedThisFrame = data.ConsumedClick;
             },
-            () => this.subscription.Dispose()
+            () => this.subscription?.Dispose()
         );
 
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();

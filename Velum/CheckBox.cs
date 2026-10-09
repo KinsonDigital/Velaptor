@@ -99,6 +99,11 @@ public sealed class CheckBox : Control
 
     public override void Update()
     {
+        if (this.font is null)
+        {
+            throw new InvalidOperationException($"The font in the '{nameof(CheckBox)}' control is null.");
+        }
+
         if (!Visible)
         {
             return;
