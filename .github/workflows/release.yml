@@ -84,7 +84,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
         uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5.3.0
@@ -157,7 +157,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set Up .NET SDK (${{ vars.NET_SDK_VERSION }})
         uses: actions/setup-dotnet@9a946fdbd5fb07b82b2f5a4466058b876ab72bb2 # v5.3.0
@@ -224,7 +224,7 @@ jobs:
     if: ${{ inputs.dry-run == false }}
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Send X Release Announcement
         uses: KinsonDigital/Infrastructure/actions/send-x-release-announcement@5dade832543507f6ee8f9123794ca7dd3b317e67 # v19.0.1
