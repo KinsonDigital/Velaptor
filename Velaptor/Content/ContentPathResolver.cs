@@ -15,7 +15,6 @@ using Services;
 /// </summary>
 internal abstract class ContentPathResolver : IContentPathResolver
 {
-    private readonly IFile file;
     private readonly IPath path;
     private string rootDirPath;
     private string contentDirName = string.Empty;
@@ -24,7 +23,6 @@ internal abstract class ContentPathResolver : IContentPathResolver
     /// Initializes a new instance of the <see cref="ContentPathResolver"/> class.
     /// </summary>
     /// <param name="appService">Provides application services.</param>
-    /// <param name="file">Performs operations with files.</param>
     /// <param name="path">Processes directory and file paths.</param>
     /// <exception cref="ArgumentNullException">
     /// Thrown if the following parameters are null:
@@ -34,13 +32,11 @@ internal abstract class ContentPathResolver : IContentPathResolver
     ///     <item><paramref name="path"/></item>
     /// </list>
     /// </exception>
-    protected ContentPathResolver(IAppService appService, IFile file, IPath path)
+    protected ContentPathResolver(IAppService appService, IPath path)
     {
         ArgumentNullException.ThrowIfNull(appService);
-        ArgumentNullException.ThrowIfNull(file);
         ArgumentNullException.ThrowIfNull(path);
 
-        this.file = file;
         this.path = path;
         this.rootDirPath = $"{appService.AppDirectory}{path.AltDirectorySeparatorChar}Content".NormalizePath();
     }
@@ -114,11 +110,6 @@ internal abstract class ContentPathResolver : IContentPathResolver
         var fullContentFilePath = this.path.IsPathRooted(contentPathOrName)
             ? contentPathOrName
             : $"{contentDirPath}{this.path.AltDirectorySeparatorChar}{contentPathOrName}";
-
-        if (!this.file.Exists(fullContentFilePath))
-        {
-            throw new FileNotFoundException("The content file could not be found.", fullContentFilePath);
-        }
 
         return fullContentFilePath;
     }

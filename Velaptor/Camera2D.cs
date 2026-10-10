@@ -5,13 +5,14 @@
 namespace Velaptor;
 
 using System;
+using System.Drawing;
 using System.Diagnostics.CodeAnalysis;
 using System.Numerics;
 using Carbonate;
 using Factories;
 
 /// <summary>
-/// A simple 2-D camera that applies pan and zoom to rendered objects on the CPU.
+/// A simple 2-D camera that applies pan, zoom, and rotation to rendered objects on the CPU.
 /// </summary>
 /// <inheritdoc cref="ICamera2D"/>
 /// <remarks>
@@ -105,13 +106,104 @@ public sealed class Camera2D : ICamera2D
     public float ZoomMax { get; set; } = 4f;
 
     /// <inheritdoc/>
+    public float Rotation { get; set; }
+
+    /// <inheritdoc/>
+    public RectangleF WorldBounds
+    {
+        get
+        {
+            // Inverse-transform all 4 screen corners to world space
+            var topLeft = InverseTransformPosition(Vector2.Zero);
+            var topRight = InverseTransformPosition(new Vector2(WindowSize.Width, 0));
+            var bottomLeft = InverseTransformPosition(new Vector2(0, WindowSize.Height));
+            var bottomRight = InverseTransformPosition(new Vector2(WindowSize.Width, WindowSize.Height));
+
+            var minX = Math.Min(Math.Min(topLeft.X, topRight.X), Math.Min(bottomLeft.X, bottomRight.X));
+            var maxX = Math.Max(Math.Max(topLeft.X, topRight.X), Math.Max(bottomLeft.X, bottomRight.X));
+            var minY = Math.Min(Math.Min(topLeft.Y, topRight.Y), Math.Min(bottomLeft.Y, bottomRight.Y));
+            var maxY = Math.Max(Math.Max(topLeft.Y, topRight.Y), Math.Max(bottomLeft.Y, bottomRight.Y));
+
+            return new RectangleF(minX, minY, maxX - minX, maxY - minY);
+        }
+    }
+
+    /// <inheritdoc/>
     public Vector2 TransformPosition(Vector2 worldPos)
     {
         var center = new Vector2(WindowSize.Width / 2f, WindowSize.Height / 2f);
+        var offset = (worldPos - center - Position) * Zoom;
 
-        return center + ((worldPos - center - Position) * Zoom);
+        if (Rotation != 0f)
+        {
+            var radians = Rotation * (float)Math.PI / 180f;
+            var cos = (float)Math.Cos(radians);
+            var sin = (float)Math.Sin(radians);
+
+            offset = new Vector2(
+                (offset.X * cos) - (offset.Y * sin),
+                (offset.X * sin) + (offset.Y * cos));
+        }
+
+        return center + offset;
     }
 
     /// <inheritdoc/>
     public float TransformSize(float size) => size * Zoom;
+
+    /// <inheritdoc/>
+    public float TransformRotation(float worldRotation) => worldRotation + Rotation;
+
+    /// <inheritdoc/>
+    public bool IsVisible(Vector2 worldPos)
+    {
+        var screenPos = TransformPosition(worldPos);
+
+        return screenPos.X >= 0 && screenPos.X <= WindowSize.Width &&
+               screenPos.Y >= 0 && screenPos.Y <= WindowSize.Height;
+    }
+
+    /// <inheritdoc/>
+    public bool IsVisible(Vector2 worldPos, Vector2 worldSize)
+    {
+        var screenPos = TransformPosition(worldPos);
+        var screenWidth = TransformSize(worldSize.X);
+        var screenHeight = TransformSize(worldSize.Y);
+
+        // Object's screen-space bounds
+        var left = screenPos.X;
+        var top = screenPos.Y;
+        var right = left + screenWidth;
+        var bottom = top + screenHeight;
+
+        // Check intersection with screen bounds
+        return left < WindowSize.Width && right > 0 &&
+               top < WindowSize.Height && bottom > 0;
+    }
+
+    /// <summary>
+    /// Transforms a screen-space position back to world-space coordinates.
+    /// This is the inverse of <see cref="TransformPosition"/>.
+    /// </summary>
+    /// <param name="screenPos">The position in screen pixel coordinates.</param>
+    /// <returns>The position in world pixel coordinates.</returns>
+    private Vector2 InverseTransformPosition(Vector2 screenPos)
+    {
+        var center = new Vector2(WindowSize.Width / 2f, WindowSize.Height / 2f);
+        var offset = (screenPos - center) / Zoom;
+
+        if (Rotation != 0f)
+        {
+            // Inverse rotation (negate the angle)
+            var radians = -Rotation * (float)Math.PI / 180f;
+            var cos = (float)Math.Cos(radians);
+            var sin = (float)Math.Sin(radians);
+
+            offset = new Vector2(
+                (offset.X * cos) - (offset.Y * sin),
+                (offset.X * sin) + (offset.Y * cos));
+        }
+
+        return center + offset + Position;
+    }
 }

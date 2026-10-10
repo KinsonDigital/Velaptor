@@ -18,7 +18,6 @@ using Graphics;
 using Graphics.Renderers;
 using Input;
 using Scene;
-using WebGpu.Batching;
 
 /// <summary>
 /// A system window where graphics can be rendered.

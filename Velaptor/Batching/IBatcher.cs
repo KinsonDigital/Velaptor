@@ -2,7 +2,7 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
-namespace Velaptor.WebGpu.Batching;
+namespace Velaptor.Batching;
 
 using System.Drawing;
 

@@ -368,7 +368,6 @@ public class ShapeScene : SceneBase
         {
             StackDirection = StackDirection.Horizontal,
             Centered = true,
-            Enabled = false,
         };
         this.layGradType.AddControl(this.lblGradType);
         this.layGradType.AddControl(this.drpGradType);
@@ -386,7 +385,6 @@ public class ShapeScene : SceneBase
         {
             StackDirection = StackDirection.Horizontal,
             Centered = true,
-            Enabled = false,
         };
         this.layGradStartClr.AddControl(this.lblGradStartClr);
         this.layGradStartClr.AddControl(this.drpGradStartClr);
@@ -404,7 +402,6 @@ public class ShapeScene : SceneBase
         {
             StackDirection = StackDirection.Horizontal,
             Centered = true,
-            Enabled = false,
         };
         this.layGradStopClr.AddControl(this.lblGradStopClr);
         this.layGradStopClr.AddControl(this.drpGradStopClr);
@@ -807,11 +804,7 @@ public class ShapeScene : SceneBase
     /// <summary>
     /// Invoked when the circle diameter slider value changes.
     /// </summary>
-    private void SldCircleDiameter_ValueChanged(object? sender, ValueChangedEventArgs e)
-    {
-        this.circle.Diameter = e.NewValue;
-        this.sldBorderThickness.Max = e.NewValue / 2;
-    }
+    private void SldCircleDiameter_ValueChanged(object? sender, ValueChangedEventArgs e) => this.circle.Diameter = e.NewValue;
 
     /// <summary>
     /// Invoked when the rectangle width slider value changes.
@@ -823,16 +816,7 @@ public class ShapeScene : SceneBase
             return;
         }
 
-        this.rectangle.Height = e.NewValue;
-        var newMaxValue = (this.rectangle.Height < this.rectangle.Width
-            ? this.rectangle.Height
-            : this.rectangle.Width) / 2;
-
-        this.sldBorderThickness.Max = newMaxValue;
-        this.sldBottomLeftRadius.Max = newMaxValue;
-        this.sldTopLeftRadius.Max = newMaxValue;
-        this.sldTopRightRadius.Max = newMaxValue;
-        this.sldBottomRightRadius.Max = newMaxValue;
+        this.rectangle.Width = e.NewValue;
     }
 
     /// <summary>
@@ -840,16 +824,12 @@ public class ShapeScene : SceneBase
     /// </summary>
     private void SldRectHeight_ValueChanged(object? sender, ValueChangedEventArgs e)
     {
-        this.rectangle.Height = e.NewValue;
-        var newMaxValue = (this.rectangle.Width < this.rectangle.Height
-            ? this.rectangle.Width
-            : this.rectangle.Height) / 2;
+        if (this.shapeType != ShapeType.Rectangle)
+        {
+            return;
+        }
 
-        this.sldBorderThickness.Max = newMaxValue;
-        this.sldBottomLeftRadius.Max = newMaxValue;
-        this.sldTopLeftRadius.Max = newMaxValue;
-        this.sldTopRightRadius.Max = newMaxValue;
-        this.sldBottomRightRadius.Max = newMaxValue;
+        this.rectangle.Height = e.NewValue;
     }
 
     /// <summary>
