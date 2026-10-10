@@ -35,7 +35,7 @@ Included items must then not match any entries in the exclude list to remain inc
               <Exclude>
                 <ModulePath>.*CPPUnitTestFramework.*</ModulePath>
                 <ModulePath>.*xunit.*.dll</ModulePath>
-                <ModulePath>.*VelaptorTests.exe</ModulePath>
+                <ModulePath>.*VelaptorTests.dll</ModulePath>
                 <ModulePath>.*VelaptorTesting.dll</ModulePath>
                 <ModulePath>.*VelaptorTesting.exe</ModulePath>
                 <ModulePath>.*VelaptorPlayground.dll</ModulePath>

@@ -194,7 +194,7 @@ public class AtlasLoaderTests
 
         // Assert
         var exception = Should.Throw<ArgumentNullException>(act);
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'atlasDataPathResolver')");
+        exception.Message.ShouldBe("Value cannot be null. (Parameter 'atlasPathResolver')");
     }
 
     [Fact]

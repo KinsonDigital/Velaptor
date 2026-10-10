@@ -5,6 +5,7 @@
 namespace Velaptor.Content;
 
 using System;
+using System.IO;
 using System.IO.Abstractions;
 using System.Runtime.InteropServices;
 using Services;
@@ -16,6 +17,7 @@ internal sealed class AudioPathResolver : ContentPathResolver
 {
     private const string OggExtension = ".ogg";
     private const string Mp3Extension = ".mp3";
+    private readonly IFile file;
     private readonly IPath path;
     private readonly IPlatform platform;
 
@@ -36,11 +38,12 @@ internal sealed class AudioPathResolver : ContentPathResolver
     /// </list>
     /// </exception>
     public AudioPathResolver(IAppService appService, IFile file, IPath path, IPlatform platform)
-        : base(appService, file, path)
+        : base(appService, path)
     {
         ArgumentNullException.ThrowIfNull(path);
         ArgumentNullException.ThrowIfNull(platform);
 
+        this.file = file;
         this.path = path;
         this.platform = platform;
         ContentDirectoryName = "Audio";
@@ -67,15 +70,37 @@ internal sealed class AudioPathResolver : ContentPathResolver
     {
         ArgumentException.ThrowIfNullOrEmpty(contentPathOrName);
 
-        contentPathOrName = this.path.HasExtension(contentPathOrName) ? contentPathOrName : $"{contentPathOrName}{OggExtension}";
+        var possiblePathOrName = this.path.HasExtension(contentPathOrName) ? contentPathOrName : $"{contentPathOrName}{OggExtension}";
+        var filePath = ResolvePossibleFilePath(possiblePathOrName);
 
-        var extension = this.path.GetExtension(contentPathOrName);
+        // If the ogg exists
+        if (this.file.Exists(filePath))
+        {
+            return filePath;
+        }
+        else
+        {
+            possiblePathOrName = this.path.HasExtension(contentPathOrName) ? contentPathOrName : $"{contentPathOrName}{Mp3Extension}";
+            filePath = ResolvePossibleFilePath(possiblePathOrName);
+
+            if (!this.file.Exists(filePath))
+            {
+                throw new FileNotFoundException("The content file could not be found.", filePath);
+            }
+        }
+
+        return filePath;
+    }
+
+    private string ResolvePossibleFilePath(string possiblePathOrName)
+    {
+        var extension = this.path.GetExtension(possiblePathOrName);
 
         // Check if the file extension is supported
         if (string.Compare(extension, OggExtension, StringComparison.OrdinalIgnoreCase) == 0 ||
             string.Compare(extension, Mp3Extension, StringComparison.OrdinalIgnoreCase) == 0)
         {
-            return base.ResolveFilePath(contentPathOrName);
+            return base.ResolveFilePath(possiblePathOrName);
         }
 
         var msg = $"The file extension '{extension}' is not supported.  Supported audio formats are '{OggExtension}' and '{Mp3Extension}'.";

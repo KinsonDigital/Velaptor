@@ -5,6 +5,7 @@
 namespace VelaptorTests;
 
 using System;
+using System.Drawing;
 using System.Numerics;
 using Carbonate.OneWay;
 using NSubstitute;
@@ -139,6 +140,19 @@ public class Camera2DTests
     }
 
     [Fact]
+    public void Rotation_WhenGettingDefaultValue_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = new Camera2D(this.mockReactableFactory);
+
+        // Act
+        var actual = sut.Rotation;
+
+        // Assert
+        actual.ShouldBe(0f);
+    }
+
+    [Fact]
     public void WindowSize_WhenGettingDefaultValue_ReturnsCorrectResult()
     {
         // Arrange
@@ -149,6 +163,53 @@ public class Camera2DTests
 
         // Assert
         actual.ShouldBe(new SizeU(0, 0));
+    }
+
+    [Fact]
+    public void WorldBounds_WithNoTransform_ReturnsWindowSizeAsWorldBounds()
+    {
+        // Arrange
+        this.mockPullWinSizeReactable.Pull(Arg.Any<Guid>()).Returns(new WindowSizeData { Width = 800, Height = 600 });
+        var sut = new Camera2D(this.mockReactableFactory);
+        sut.Zoom = 1f;
+
+        // Act
+        var actual = sut.WorldBounds;
+
+        // Assert
+        actual.ShouldBe(new RectangleF(0, 0, 800, 600));
+    }
+
+    [Fact]
+    public void WorldBounds_WithPositionOffset_ReturnsOffsetBounds()
+    {
+        // Arrange
+        this.mockPullWinSizeReactable.Pull(Arg.Any<Guid>()).Returns(new WindowSizeData { Width = 800, Height = 600 });
+        var sut = new Camera2D(this.mockReactableFactory);
+        sut.Zoom = 1f;
+        sut.Position = new Vector2(100, 50);
+
+        // Act
+        var actual = sut.WorldBounds;
+
+        // Assert
+        actual.ShouldBe(new RectangleF(100, 50, 800, 600));
+    }
+
+    [Fact]
+    public void WorldBounds_WithZoom_ReturnsScaledBounds()
+    {
+        // Arrange
+        this.mockPullWinSizeReactable.Pull(Arg.Any<Guid>()).Returns(new WindowSizeData { Width = 800, Height = 600 });
+        var sut = new Camera2D(this.mockReactableFactory);
+        sut.Zoom = 2f;
+
+        // Act
+        var actual = sut.WorldBounds;
+
+        // Assert
+        // With 2x zoom, visible world area is half the screen size, centered on screen center
+        actual.ShouldBe(new RectangleF(200, 150, 400, 300));
     }
     #endregion
 
@@ -167,6 +228,22 @@ public class Camera2DTests
     }
 
     [Fact]
+    public void TransformPosition_WithRotation_ReturnsCorrectResult()
+    {
+        // Arrange
+        var sut = new Camera2D(this.mockReactableFactory);
+        sut.Zoom = 1f;
+        sut.Rotation = 90f;
+
+        // Act
+        var actual = sut.TransformPosition(new Vector2(100, 0));
+
+        // Assert
+        actual.X.ShouldBe(0f, 0.0001f);
+        actual.Y.ShouldBe(100f, 0.0001f);
+    }
+
+    [Fact]
     public void TransformSize_whenInvoked_ReturnsCorrectResult()
     {
         // Arrange
@@ -178,6 +255,124 @@ public class Camera2DTests
 
         // Assert
         actual.ShouldBe(0.4f);
+    }
+
+    [Fact]
+    public void TransformRotation_WithNoCameraRotation_ReturnsWorldRotation()
+    {
+        // Arrange
+        var sut = new Camera2D(this.mockReactableFactory);
+
+        // Act
+        var actual = sut.TransformRotation(45f);
+
+        // Assert
+        actual.ShouldBe(45f);
+    }
+
+    [Fact]
+    public void TransformRotation_WithCameraRotation_ReturnsWorldRotationPlusCameraRotation()
+    {
+        // Arrange
+        var sut = new Camera2D(this.mockReactableFactory);
+        sut.Rotation = 90f;
+
+        // Act
+        var actual = sut.TransformRotation(45f);
+
+        // Assert
+        actual.ShouldBe(135f);
+    }
+
+    [Fact]
+    public void IsVisible_WithPointOnScreen_ReturnsTrue()
+    {
+        // Arrange
+        this.mockPullWinSizeReactable.Pull(Arg.Any<Guid>()).Returns(new WindowSizeData { Width = 800, Height = 600 });
+        var sut = new Camera2D(this.mockReactableFactory);
+        sut.Zoom = 1f;
+
+        // Act
+        var actual = sut.IsVisible(new Vector2(400, 300));
+
+        // Assert
+        actual.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void IsVisible_WithPointOffScreenRight_ReturnsFalse()
+    {
+        // Arrange
+        this.mockPullWinSizeReactable.Pull(Arg.Any<Guid>()).Returns(new WindowSizeData { Width = 800, Height = 600 });
+        var sut = new Camera2D(this.mockReactableFactory);
+        sut.Zoom = 1f;
+
+        // Act
+        var actual = sut.IsVisible(new Vector2(1000, 300));
+
+        // Assert
+        actual.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IsVisible_WithPointOffScreenLeft_ReturnsFalse()
+    {
+        // Arrange
+        this.mockPullWinSizeReactable.Pull(Arg.Any<Guid>()).Returns(new WindowSizeData { Width = 800, Height = 600 });
+        var sut = new Camera2D(this.mockReactableFactory);
+        sut.Zoom = 1f;
+
+        // Act
+        var actual = sut.IsVisible(new Vector2(-100, 300));
+
+        // Assert
+        actual.ShouldBeFalse();
+    }
+
+    [Fact]
+    public void IsVisible_WithRectFullyOnScreen_ReturnsTrue()
+    {
+        // Arrange
+        this.mockPullWinSizeReactable.Pull(Arg.Any<Guid>()).Returns(new WindowSizeData { Width = 800, Height = 600 });
+        var sut = new Camera2D(this.mockReactableFactory);
+        sut.Zoom = 1f;
+
+        // Act
+        var actual = sut.IsVisible(new Vector2(100, 100), new Vector2(50, 50));
+
+        // Assert
+        actual.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void IsVisible_WithRectPartiallyOnScreen_ReturnsTrue()
+    {
+        // Arrange
+        this.mockPullWinSizeReactable.Pull(Arg.Any<Guid>()).Returns(new WindowSizeData { Width = 800, Height = 600 });
+        var sut = new Camera2D(this.mockReactableFactory);
+        sut.Zoom = 1f;
+
+        // Act
+        // Rect starts at x=750 with width=100, so it extends from 750 to 850 (partially off right edge)
+        var actual = sut.IsVisible(new Vector2(750, 300), new Vector2(100, 100));
+
+        // Assert
+        actual.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void IsVisible_WithRectFullyOffScreen_ReturnsFalse()
+    {
+        // Arrange
+        this.mockPullWinSizeReactable.Pull(Arg.Any<Guid>()).Returns(new WindowSizeData { Width = 800, Height = 600 });
+        var sut = new Camera2D(this.mockReactableFactory);
+        sut.Zoom = 1f;
+
+        // Act
+        var actual = sut.IsVisible(new Vector2(1000, 300), new Vector2(50, 50));
+
+        // Assert
+        actual.ShouldBeFalse();
     }
     #endregion
 }

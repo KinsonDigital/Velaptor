@@ -31,7 +31,7 @@ internal sealed class AtlasLoader : IAtlasLoader
     private readonly IDisposable unsubscriber;
     private readonly ITextureFactory textureFactory;
     private readonly IAtlasDataFactory atlasDataFactory;
-    private readonly IContentPathResolver atlasDataPathResolver;
+    private readonly IContentPathResolver atlasPathResolver;
     private readonly IImageService imageService;
     private readonly IJsonService jsonService;
     private readonly IDirectory directory;
@@ -45,7 +45,7 @@ internal sealed class AtlasLoader : IAtlasLoader
     /// <param name="textureFactory">Creates textures.</param>
     /// <param name="atlasDataFactory">Generates <see cref="IAtlasData"/> instances.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
-    /// <param name="atlasDataPathResolver">Resolves paths to JSON atlas data files.</param>
+    /// <param name="atlasPathResolver">Resolves paths to JSON atlas data files.</param>
     /// <param name="imageService">Provides image-related services.</param>
     /// <param name="jsonService">Provides JSON-related services.</param>
     /// <param name="directory">Performs operations with directories.</param>
@@ -58,7 +58,7 @@ internal sealed class AtlasLoader : IAtlasLoader
         ITextureFactory textureFactory,
         IAtlasDataFactory atlasDataFactory,
         IReactableFactory reactableFactory,
-        IContentPathResolver atlasDataPathResolver,
+        IContentPathResolver atlasPathResolver,
         IImageService imageService,
         IJsonService jsonService,
         IDirectory directory,
@@ -68,7 +68,7 @@ internal sealed class AtlasLoader : IAtlasLoader
         ArgumentNullException.ThrowIfNull(textureFactory);
         ArgumentNullException.ThrowIfNull(atlasDataFactory);
         ArgumentNullException.ThrowIfNull(reactableFactory);
-        ArgumentNullException.ThrowIfNull(atlasDataPathResolver);
+        ArgumentNullException.ThrowIfNull(atlasPathResolver);
         ArgumentNullException.ThrowIfNull(imageService);
         ArgumentNullException.ThrowIfNull(jsonService);
         ArgumentNullException.ThrowIfNull(directory);
@@ -77,7 +77,7 @@ internal sealed class AtlasLoader : IAtlasLoader
 
         this.textureFactory = textureFactory;
         this.atlasDataFactory = atlasDataFactory;
-        this.atlasDataPathResolver = atlasDataPathResolver;
+        this.atlasPathResolver = atlasPathResolver;
         this.imageService = imageService;
         this.jsonService = jsonService;
         this.directory = directory;
@@ -139,7 +139,7 @@ internal sealed class AtlasLoader : IAtlasLoader
         var isPathRooted = this.path.IsPathRooted(atlasPathOrName);
         var contentDirPath = isPathRooted
             ? this.path.GetDirectoryName(atlasPathOrName) ?? string.Empty
-            : this.atlasDataPathResolver.ResolveDirPath();
+            : this.atlasPathResolver.ResolveDirPath();
 
         if (!isPathRooted && !this.directory.Exists(contentDirPath))
         {

@@ -58,7 +58,7 @@ public class AudioScene : SceneBase
         this.backgroundManager = new BackgroundManager();
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
 
-        this.audio = this.contentManager.LoadAudio("ridley-draygon-theme.ogg", AudioBuffer.Stream);
+        this.audio = this.contentManager.LoadAudio("ridley-draygon-theme", AudioBuffer.Stream);
 
         CreateInfoLabel();
         CreateAudioCtrls();
@@ -105,13 +105,9 @@ public class AudioScene : SceneBase
 
         var textLines = new[]
         {
-            "Use the audio controls to manipulate the audio.",
-            "---------------------------------------------------------",
-            $"Repeat Enabled: {(this.audio.IsLooping ? "yes" : "no")}",
-            $"Audio Type: {this.currentAudioType}",
-            $"Audio Length: {length}",
-            $"Current Time: {currentTime}",
-            $"Audio State: {GetState()}",
+            "Use the audio controls to manipulate the audio.", "---------------------------------------------------------",
+            $"Repeat Enabled: {(this.audio.IsLooping ? "yes" : "no")}", $"Audio Type: {this.currentAudioType}", $"Audio Length: {length}",
+            $"Current Time: {currentTime}", $"Audio State: {GetState()}",
         };
 
         this.lblInfo.Text = string.Join(Environment.NewLine, textLines);
@@ -209,46 +205,25 @@ public class AudioScene : SceneBase
         this.drpAudioFile.AddItem("Mother Brain Final Battle (OGG)");
         this.drpAudioFile.SelectedItemChanged += DrpAudioFile_SelectedItemChanged;
 
-        this.layAudioFile = new Layout
-        {
-            StackDirection = StackDirection.Horizontal,
-            Centered = true,
-        };
+        this.layAudioFile = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, };
         this.layAudioFile.AddControl(this.lblAudioFile);
         this.layAudioFile.AddControl(this.drpAudioFile);
 
         // Volume slider
         this.lblVolume = new Label { Text = "Volume:" };
-        this.sldVolume = new Slider
-        {
-            Min = 0f,
-            Max = 100f,
-            Value = 100f,
-        };
+        this.sldVolume = new Slider { Min = 0f, Max = 100f, Value = 100f, };
         this.sldVolume.ValueChanged += SldVolume_ValueChanged;
 
-        this.layVolume = new Layout
-        {
-            StackDirection = StackDirection.Horizontal,
-            Centered = true,
-        };
+        this.layVolume = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, };
         this.layVolume.AddControl(this.lblVolume);
         this.layVolume.AddControl(this.sldVolume);
 
         // Position slider
         this.lblPosition = new Label { Text = "Position:" };
-        this.sldPosition = new Slider
-        {
-            Min = 0f,
-            Max = (float)this.audio.Length.TotalSeconds,
-        };
+        this.sldPosition = new Slider { Min = 0f, Max = (float)this.audio.Length.TotalSeconds, };
         this.sldPosition.ValueChanged += SldPosition_ValueChanged;
 
-        this.layPosition = new Layout
-        {
-            StackDirection = StackDirection.Horizontal,
-            Centered = true,
-        };
+        this.layPosition = new Layout { StackDirection = StackDirection.Horizontal, Centered = true, };
         this.layPosition.AddControl(this.lblPosition);
         this.layPosition.AddControl(this.sldPosition);
 
@@ -273,10 +248,7 @@ public class AudioScene : SceneBase
         this.chkRepeat.CheckedChanged += ChkRepeat_CheckedChanged;
 
         // Main layout
-        this.layMain = new Layout
-        {
-            StackDirection = StackDirection.Vertical,
-        };
+        this.layMain = new Layout { StackDirection = StackDirection.Vertical, };
         this.layMain.AddControl(this.layAudioFile);
         this.layMain.AddControl(this.layVolume);
         this.layMain.AddControl(this.layPosition);
@@ -308,9 +280,9 @@ public class AudioScene : SceneBase
 
         var audioName = e.NewValue switch
         {
-            "Ridley Draygon Theme (OGG)" => "ridley-draygon-theme.ogg",
-            "Ridley's Hideout (MP3)" => "ridleys-hideout.mp3",
-            "Mother Brain Final Battle (OGG)" => "mother-brain-final-battle.ogg",
+            "Ridley Draygon Theme (OGG)" => "ridley-draygon-theme",
+            "Ridley's Hideout (MP3)" => "ridleys-hideout",
+            "Mother Brain Final Battle (OGG)" => "mother-brain-final-battle",
             _ => throw new ArgumentException($"The audio item '{e.NewValue}' is not supported."),
         };
 

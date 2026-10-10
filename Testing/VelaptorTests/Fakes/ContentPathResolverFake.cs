@@ -16,8 +16,8 @@ using Velaptor.Services;
 internal sealed class ContentPathResolverFake : ContentPathResolver
 {
     // ReSharper disable once ConvertToPrimaryConstructor
-    public ContentPathResolverFake(IAppService appService, IFile file, IPath path)
-        : base(appService, file, path)
+    public ContentPathResolverFake(IAppService appService, IPath path)
+        : base(appService, path)
     {
     }
 }

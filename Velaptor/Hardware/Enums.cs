@@ -7,7 +7,7 @@ namespace Velaptor.Hardware;
 /// <summary>
 /// Represents different memory architectures.
 /// </summary>
-public enum RamType
+internal enum RamType
 {
     /// <summary>
     /// Represents unified memory architecture.
