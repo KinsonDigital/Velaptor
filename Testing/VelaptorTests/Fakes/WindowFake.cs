@@ -5,6 +5,7 @@
 namespace VelaptorTests.Fakes;
 
 using Velaptor;
+using Velaptor.Batching;
 using Velaptor.Content;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;

@@ -5,6 +5,7 @@
 namespace Velaptor.Content;
 
 using System;
+using System.IO;
 using System.IO.Abstractions;
 using Services;
 
@@ -14,6 +15,7 @@ using Services;
 internal class TexturePathResolver : ContentPathResolver
 {
     private const string FileExtension = ".png";
+    private readonly IFile file;
     private readonly IPath path;
 
     /// <summary>
@@ -31,8 +33,9 @@ internal class TexturePathResolver : ContentPathResolver
     /// </list>
     /// </exception>
     public TexturePathResolver(IAppService appService, IFile file, IPath path)
-        : base(appService, file, path)
+        : base(appService, path)
     {
+        this.file = file;
         this.path = path;
         ContentDirectoryName = "Graphics";
     }
@@ -50,6 +53,13 @@ internal class TexturePathResolver : ContentPathResolver
 
         contentPathOrName = this.path.HasExtension(contentPathOrName) ? contentPathOrName : $"{contentPathOrName}{FileExtension}";
 
-        return base.ResolveFilePath(contentPathOrName);
+        var filePath = base.ResolveFilePath(contentPathOrName);
+
+        if (!this.file.Exists(filePath))
+        {
+            throw new FileNotFoundException("The content file could not be found.", filePath);
+        }
+
+        return filePath;
     }
 }

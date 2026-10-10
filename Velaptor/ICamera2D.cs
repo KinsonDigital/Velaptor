@@ -5,10 +5,11 @@
 namespace Velaptor;
 
 using System.Diagnostics.CodeAnalysis;
+using System.Drawing;
 using System.Numerics;
 
 /// <summary>
-/// A simple 2-D camera that applies pan and zoom transforms on the CPU for
+/// A simple 2-D camera that applies pan, zoom, and rotation transforms on the CPU for
 /// world-to-screen coordinate conversion.
 /// </summary>
 /// <remarks>
@@ -55,10 +56,39 @@ public interface ICamera2D
     float ZoomMax { get; set; }
 
     /// <summary>
+    /// Gets or sets the camera rotation in degrees. Positive values rotate the view
+    /// clockwise. Default is <c>0</c> (no rotation). Rotation is applied around the
+    /// screen center after zoom.
+    /// </summary>
+    float Rotation { get; set; }
+
+    /// <summary>
     /// Gets the current window size in pixels. Used to locate the screen center for
     /// zoom calculations. Updated automatically on window resize.
     /// </summary>
     SizeU WindowSize { get; }
+
+    /// <summary>
+    /// Gets the axis-aligned bounds of the visible world area in world pixel coordinates.
+    /// When the camera is rotated, this is the bounding box of the rotated view frustum.
+    /// </summary>
+    RectangleF WorldBounds { get; }
+
+    /// <summary>
+    /// Determines whether a world-space point is visible on the screen.
+    /// </summary>
+    /// <param name="worldPos">The position in world pixel coordinates.</param>
+    /// <returns><c>true</c> if the point is within the visible screen area; otherwise, <c>false</c>.</returns>
+    bool IsVisible(Vector2 worldPos);
+
+    /// <summary>
+    /// Determines whether a world-space rectangle intersects the visible screen area.
+    /// Use this for culling objects with size (sprites, tiles, etc.).
+    /// </summary>
+    /// <param name="worldPos">The top-left position of the object in world pixel coordinates.</param>
+    /// <param name="worldSize">The size of the object in world pixels.</param>
+    /// <returns><c>true</c> if any part of the rectangle is visible; otherwise, <c>false</c>.</returns>
+    bool IsVisible(Vector2 worldPos, Vector2 worldSize);
 
     /// <summary>
     /// Transforms a world-space pixel position into a screen render position,
@@ -75,4 +105,13 @@ public interface ICamera2D
     /// <param name="size">The size in world pixels.</param>
     /// <returns>The scaled size in screen pixels.</returns>
     float TransformSize(float size);
+
+    /// <summary>
+    /// Transforms a world-space rotation angle (in degrees) into a screen-space
+    /// rotation angle, accounting for camera rotation. Rotation is additive:
+    /// positive camera rotation (clockwise) adds to the object's rotation.
+    /// </summary>
+    /// <param name="worldRotation">The rotation angle in world space, in degrees.</param>
+    /// <returns>The rotation angle in screen space, in degrees.</returns>
+    float TransformRotation(float worldRotation);
 }

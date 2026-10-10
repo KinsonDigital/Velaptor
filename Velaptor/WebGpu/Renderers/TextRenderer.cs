@@ -118,6 +118,10 @@ internal sealed class TextRenderer : ITextRenderer
         => RenderBase(font, text, (int)position.X, (int)position.Y, renderSize, angle, Color.White, layer);
 
     /// <inheritdoc/>
+    public void Render(IFont font, string text, Vector2 position, float renderSize, float angle, Color color, int layer = 0)
+        => RenderBase(font, text, (int)position.X, (int)position.Y, renderSize, angle, color, layer);
+
+    /// <inheritdoc/>
     public void Render(IFont font, string text, int x, int y, Color color, int layer = 0)
         => RenderBase(font, text, x, y, 1f, 0f, color, layer);
 

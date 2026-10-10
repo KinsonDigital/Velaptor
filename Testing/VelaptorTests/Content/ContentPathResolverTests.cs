@@ -24,7 +24,6 @@ public class ContentPathResolverTests
 {
     private static readonly string RootDirPath = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "C:/app" : "/app";
     private readonly IAppService mockAppService;
-    private readonly IFile mockFile;
     private readonly IPath mockPath;
 
     /// <summary>
@@ -34,9 +33,6 @@ public class ContentPathResolverTests
     {
         this.mockAppService = Substitute.For<IAppService>();
         this.mockAppService.AppDirectory.Returns(_ => RootDirPath);
-
-        this.mockFile = Substitute.For<IFile>();
-        this.mockFile.Exists(Arg.Any<string>()).Returns(true);
 
         this.mockPath = Substitute.For<IPath>();
         this.mockPath.AltDirectorySeparatorChar.Returns(Path.AltDirectorySeparatorChar);
@@ -107,10 +103,7 @@ public class ContentPathResolverTests
     public void Ctor_WithNullAppServiceParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () =>
-        {
-            _ = new ContentPathResolverFake(null, this.mockFile, this.mockPath);
-        };
+        var act = () => _ = new ContentPathResolverFake(null, this.mockPath);
 
         // Assert
         var exception = Should.Throw<ArgumentNullException>(act);
@@ -118,27 +111,10 @@ public class ContentPathResolverTests
     }
 
     [Fact]
-    public void Ctor_WithNullFileParam_ThrowsException()
-    {
-        // Arrange & Act
-        var act = () =>
-        {
-            _ = new ContentPathResolverFake(this.mockAppService, null, this.mockPath);
-        };
-
-        // Assert
-        var exception = Should.Throw<ArgumentNullException>(act);
-        exception.Message.ShouldBe("Value cannot be null. (Parameter 'file')");
-    }
-
-    [Fact]
     public void Ctor_WithNullPathParam_ThrowsException()
     {
         // Arrange & Act
-        var act = () =>
-        {
-            _ = new ContentPathResolverFake(this.mockAppService, this.mockFile, null);
-        };
+        var act = () => _ = new ContentPathResolverFake(this.mockAppService, null);
 
         // Assert
         var exception = Should.Throw<ArgumentNullException>(act);
@@ -285,27 +261,6 @@ public class ContentPathResolverTests
         exception.Message.ShouldBe(expectedMsg);
     }
 
-    [Fact]
-    public void ResolveFilePath_WhenContentFileDoesNotExist_ThrowsException()
-    {
-        // Arrange
-        // Input uses backslashes; after NormalizeSeparators they become forward slashes.
-        var inputFilePath = $@"{RootDirPath}\app\test-content.png";
-        var expectedNormalizedFilePath = $"{RootDirPath}/app/test-content.png";
-        this.mockPath.IsPathRooted(Arg.Any<string>()).Returns(true);
-        this.mockPath.HasExtension(Arg.Any<string>()).Returns(true);
-        this.mockFile.Exists(Arg.Any<string>()).Returns(false);
-
-        var sut = CreateSystemUnderTest();
-
-        // Act
-        var act = () => sut.ResolveFilePath(inputFilePath);
-
-        // Assert
-        var exception = Should.Throw<FileNotFoundException>(act, "The content file could not be found.");
-        exception.FileName.ShouldBe(expectedNormalizedFilePath);
-    }
-
     [TheoryForWindows]
     [MemberData(nameof(ResolveFilePath_WhenInvokedOnWindows_ResolvesContentFilePath_Data))]
     public void ResolveFilePath_WhenInvokedOnWindows_ResolvesContentFilePath(
@@ -314,7 +269,6 @@ public class ContentPathResolverTests
         string expected)
     {
         // Arrange
-        this.mockFile.Exists(Arg.Any<string>()).Returns(true);
         this.mockPath.IsPathRooted(Arg.Any<string>()).Returns(isPathRooted);
         this.mockPath.HasExtension(Arg.Any<string>()).Returns(true);
 
@@ -336,7 +290,6 @@ public class ContentPathResolverTests
         string expected)
     {
         // Arrange
-        this.mockFile.Exists(Arg.Any<string>()).Returns(true);
         this.mockPath.IsPathRooted(Arg.Any<string>()).Returns(isPathRooted);
         this.mockPath.HasExtension(Arg.Any<string>()).Returns(true);
 
@@ -355,5 +308,5 @@ public class ContentPathResolverTests
     /// Creates a new instance of <see cref="ContentPathResolverFake"/> for the purpose of testing.
     /// </summary>
     /// <returns>The instance to test.</returns>
-    private ContentPathResolverFake CreateSystemUnderTest() => new (this.mockAppService, this.mockFile, this.mockPath);
+    private ContentPathResolverFake CreateSystemUnderTest() => new (this.mockAppService, this.mockPath);
 }

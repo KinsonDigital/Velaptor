@@ -23,7 +23,8 @@ using VelaptorTesting;
 public class CameraScene : SceneBase
 {
     private const float CamPanSpeed = 300f;
-    private const float CamZoomSpeed = 0.6f;
+    private const float CamZoomSpeed = 1.0f;
+    private const float CameraAngleSpeed = 40f;
     private const int WindowPadding = 15;
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly ITextureRenderer textureRenderer;
@@ -31,9 +32,10 @@ public class CameraScene : SceneBase
     private readonly BackgroundManager backgroundManager;
     private readonly ICamera2D camera;
     private readonly Label lblInstructions;
-    private Vector2 mapWorldPos;
+    private Vector2 worldMapPos;
     private ITexture? zeldaMapTexture;
     private IFont? font;
+    private float mapAngle;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="CameraScene"/> class.
@@ -51,7 +53,10 @@ public class CameraScene : SceneBase
         this.lblInstructions.Text = "Camera Controls:\n" +
             "- Arrow Keys: Pan the camera\n" +
             "- Shift + Up Arrow: Zoom in\n" +
-            "- Shift + Down Arrow: Zoom out";
+            "- Shift + Down Arrow: Zoom out\n" +
+            "- Ctrl + Right Arrow: Rotate CC\n" +
+            "- Ctrl + Left Arrow: Rotate CWW\n" +
+            "- Esc: Reset";
         this.lblInstructions.TextColor = Color.White;
     }
 
@@ -60,7 +65,7 @@ public class CameraScene : SceneBase
         this.backgroundManager.Load(new Vector2(WindowCenter.X, WindowCenter.Y));
         this.lblInstructions.Load();
 
-        this.mapWorldPos = new Vector2(WindowCenter.X, WindowCenter.Y);
+        this.worldMapPos = new Vector2(WindowCenter.X, WindowCenter.Y);
         this.zeldaMapTexture = this.contentManager.Load<ITexture>("zelda-light-world");
         this.font = this.contentManager.LoadFont(Program.DefaultFontBold, 24);
 
@@ -86,11 +91,15 @@ public class CameraScene : SceneBase
         var camVelocityY = (float)frameTime.ElapsedTime.TotalSeconds * CamPanSpeed;
         var camZoomVelocityIn = (float)frameTime.ElapsedTime.TotalSeconds * CamZoomSpeed;
         var camZoomVelocityOut = (float)frameTime.ElapsedTime.TotalSeconds * CamZoomSpeed;
+        var camAngleVelocity = (float)frameTime.ElapsedTime.TotalSeconds * CameraAngleSpeed;
 
         var currentKeyState = this.keyboard.GetState();
 
         var isShiftDown = currentKeyState.IsKeyDown(KeyCode.LeftShift) ||
             currentKeyState.IsKeyDown(KeyCode.RightShift);
+
+        var isCtrlDown = currentKeyState.IsKeyDown(KeyCode.LeftControl) ||
+            currentKeyState.IsKeyDown(KeyCode.RightControl);
 
         if (isShiftDown)
         {
@@ -104,6 +113,18 @@ public class CameraScene : SceneBase
             if (currentKeyState.IsKeyDown(KeyCode.Down))
             {
                 this.camera.Zoom -= camZoomVelocityOut;
+            }
+        }
+        else if (isCtrlDown)
+        {
+            if (currentKeyState.IsKeyDown(KeyCode.Left))
+            {
+                this.mapAngle -= camAngleVelocity;
+            }
+
+            if (currentKeyState.IsKeyDown(KeyCode.Right))
+            {
+                this.mapAngle += camAngleVelocity;
             }
         }
         else
@@ -142,13 +163,14 @@ public class CameraScene : SceneBase
 
         this.backgroundManager.Render();
 
-        var mapPos = this.camera.TransformPosition(this.mapWorldPos);
+        var mapPos = this.camera.TransformPosition(this.worldMapPos);
         var textureScale = this.camera.TransformSize(2f);
+        var angle = this.camera.TransformRotation(this.mapAngle);
 
         this.textureRenderer.Render(
             this.zeldaMapTexture,
             mapPos,
-            0f,
+            angle,
             textureScale,
             -100);
 

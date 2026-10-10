@@ -431,6 +431,21 @@ public class TextRendererTests : TestsBase
     }
 
     [Fact]
+    public void Render_WithVector2PositionAndRenderSizeAndAngleAndColorOverload_WhenInvoked_AddsItemToBatchManager()
+    {
+        // Arrange
+        var mockFont = CreateMockFont();
+        var sut = CreateSystemUnderTest();
+        this.batchBeginSubscription.OnReceive();
+
+        // Act
+        sut.Render(mockFont, "A", new Vector2(10, 20), 1.5f, 45f, Color.White, 0);
+
+        // Assert
+        this.mockBatchingManager.Received(1).AddFontItem(Arg.Any<FontGlyphBatchItem>(), 0, Arg.Any<DateTime>());
+    }
+
+    [Fact]
     public void Render_WithColorOverload_WhenInvoked_AddsItemToBatchManager()
     {
         // Arrange
