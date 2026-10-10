@@ -12,6 +12,7 @@ using Carbonate.NonDirectional;
 using Carbonate.OneWay;
 using Graphics.Renderers.Exceptions;
 using ReactableData;
+using Velaptor.Batching;
 
 /// <summary>
 /// Manages the batch rendering lifecycle for the WebGPU backend.

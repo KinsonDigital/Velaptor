@@ -12,6 +12,7 @@ using Helpers;
 using NSubstitute;
 using Shouldly;
 using Velaptor;
+using Velaptor.Batching;
 using Velaptor.Content;
 using Velaptor.Content.Fonts;
 using Velaptor.Graphics.Renderers;

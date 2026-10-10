@@ -6,6 +6,7 @@ namespace PlaygroundApp;
 
 using System.Drawing;
 using Velaptor;
+using Velaptor.Batching;
 using Velaptor.Content;
 using Velaptor.Factories;
 using Velaptor.Graphics;
