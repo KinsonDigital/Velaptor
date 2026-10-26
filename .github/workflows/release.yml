@@ -101,6 +101,9 @@ jobs:
     name: Build Sample Projects
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: Build VelaptorDocs Sample Projects
         uses: ./.github/actions/build-target-projects
         with:
@@ -136,6 +139,9 @@ jobs:
     name: Build Velaptor Aseprite
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: Build VelaptorDocs Sample Projects
         uses: ./.github/actions/build-target-projects
         with:
