@@ -177,6 +177,7 @@ jobs:
       build_sample_projects, build_velaptor_templates, build_velaptor_aseprite,
       run_tests]
     uses: KinsonDigital/Infrastructure/.github/workflows/dotnet-lib-release.yml@5dade832543507f6ee8f9123794ca7dd3b317e67 # v19.0.1
+    permissions: write-all
     with:      
       owner-name: "${{ vars.ORGANIZATION_NAME }}" 
       repo-name: "${{ vars.PROJECT_NAME }}"
