@@ -134,8 +134,8 @@ runs:
 
         $solutionName = "$env:TARGET_SOLUTION_NAME".Trim();
 
-        if ($solutionName.EndsWith(".sln")) {
+        if ($solutionName.EndsWith(".slnx")) {
             $solutionName = $solutionName.Substring(0, $solutionName.Length - 4);
         }
 
-        dotnet build "$env:GITHUB_WORKSPACE/TargetRepo/$($dirPath)/$($solutionName).sln";
+        dotnet build "$env:GITHUB_WORKSPACE/TargetRepo/$($dirPath)/$($solutionName).slnx";
