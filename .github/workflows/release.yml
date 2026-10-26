@@ -53,7 +53,7 @@ jobs:
         id: validate-version
         uses: KinsonDigital/Infrastructure/actions/validate-version@5dade832543507f6ee8f9123794ca7dd3b317e67 # v19.0.1
         with:
-          version: "v${{ steps.get-version.outputs.version }}"
+          version: "${{ steps.get-version.outputs.version }}"
           release-type: "${{ inputs.release-type }}"
           cache-enabled: ${{ inputs.cache-disabled == true && 'false' || 'true' }}
 
@@ -62,6 +62,7 @@ jobs:
     name: Validate Release
     needs: [get_and_validate_version]
     uses: KinsonDigital/Infrastructure/.github/workflows/validate-release.yml@5dade832543507f6ee8f9123794ca7dd3b317e67 # v19.0.1
+    permissions: read-all
     with:
       owner-name: "${{ vars.ORGANIZATION_NAME }}"
       repo-name: "${{ vars.PROJECT_NAME }}"
@@ -100,10 +101,13 @@ jobs:
     name: Build Sample Projects
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: Build VelaptorDocs Sample Projects
         uses: ./.github/actions/build-target-projects
         with:
-          target-solution-name: "VelaptorDocs"
+          target-solution-name: "SampleProjects"
           target-owner-name: "KinsonDigital"
           target-repo-name: "VelaptorDocs"
           target-ref: "main"
@@ -118,6 +122,9 @@ jobs:
     name: Build Velaptor Templates
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: Build VelaptorDocs Sample Projects
         uses: ./.github/actions/build-target-projects
         with:
@@ -135,13 +142,16 @@ jobs:
     name: Build Velaptor Aseprite
     runs-on: ubuntu-24.04
     steps:
+      - name: Checkout Repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
       - name: Build VelaptorDocs Sample Projects
         uses: ./.github/actions/build-target-projects
         with:
           target-solution-name: "VelaptorAseprite"
           target-owner-name: "KinsonDigital"
           target-repo-name: "VelaptorAseprite"
-          target-ref: "main"
+          target-ref: "preview"
           velaptor-branch: "${{ github.ref_name }}"
           dotnet-sdk-version: "${{ vars.NET_SDK_VERSION }}"
           deno-version: "${{ vars.DENO_VERSION }}"
@@ -176,6 +186,7 @@ jobs:
       build_sample_projects, build_velaptor_templates, build_velaptor_aseprite,
       run_tests]
     uses: KinsonDigital/Infrastructure/.github/workflows/dotnet-lib-release.yml@5dade832543507f6ee8f9123794ca7dd3b317e67 # v19.0.1
+    permissions: write-all
     with:      
       owner-name: "${{ vars.ORGANIZATION_NAME }}" 
       repo-name: "${{ vars.PROJECT_NAME }}"
@@ -265,6 +276,7 @@ jobs:
       build_velaptor_aseprite, build_velaptor_templates, perform_release]
     if: ${{ inputs.dry-run == false }}
     uses: KinsonDigital/Infrastructure/.github/workflows/process-milestone.yml@5dade832543507f6ee8f9123794ca7dd3b317e67 # v19.0.1
+    permissions: read-all
     with:
       owner-name: ${{ vars.ORGANIZATION_NAME }}
       repo-name: ${{ vars.PROJECT_NAME }}
