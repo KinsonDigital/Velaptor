@@ -38,6 +38,7 @@ runs:
         ref: "${{ inputs.target-ref }}"
         path: "TargetRepo"
 
+    # Checkout Velaptor repository so we can build a nuget package
     - name: Checkout Velaptor Repository
       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       with:
@@ -55,6 +56,7 @@ runs:
       with:
         deno-version: "${{ inputs.deno-version }}"
 
+    # Change the version to something that does not occur for testing purposes
     - name: Update Velaptor Version
       shell: pwsh
       env:
@@ -93,7 +95,7 @@ runs:
       run: |
         deno -ERW "$env:GITHUB_WORKSPACE/VelaptorRepo/.github/cicd-scripts/update-velaptor-nuget-versions.ts";
 
-    - name: Build Sample Projects Solution
+    - name: Build Target Solution
       shell: pwsh
       env:
         TARGET_RELATIVE_DIR_PATH: "${{ inputs.target-relative-dir-path }}"
