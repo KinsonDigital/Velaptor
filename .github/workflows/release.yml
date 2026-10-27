@@ -107,9 +107,9 @@ jobs:
       - name: Build VelaptorDocs Sample Projects
         uses: ./.github/actions/build-target-projects
         with:
-          target-solution-name: "VelaptorDocs"
+          target-solution-name: "SampleProjects"
           target-owner-name: "KinsonDigital"
-          target-repo-name: "SampleProjects"
+          target-repo-name: "VelaptorDocs"
           target-ref: "main"
           target-relative-dir-path: "SampleProjects"
           velaptor-branch: "${{ github.ref_name }}"
@@ -152,6 +152,7 @@ jobs:
           target-solution-name: "VelaptorAseprite"
           target-owner-name: "KinsonDigital"
           target-repo-name: "VelaptorAseprite"
+          target-relative-dir-path: ""
           target-ref: "main"
           velaptor-branch: "${{ github.ref_name }}"
           dotnet-sdk-version: "${{ vars.NET_SDK_VERSION }}"
