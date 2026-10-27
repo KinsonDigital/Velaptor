@@ -132,7 +132,6 @@ jobs:
           target-owner-name: "KinsonDigital"
           target-repo-name: "VelaptorTemplates"
           target-ref: "main"
-          target-relative-dir-path: "VelaptorTemplates"
           velaptor-branch: "${{ github.ref_name }}"
           dotnet-sdk-version: "${{ vars.NET_SDK_VERSION }}"
           deno-version: "${{ vars.DENO_VERSION }}"
