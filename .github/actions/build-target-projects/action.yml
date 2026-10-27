@@ -113,4 +113,11 @@ runs:
             $solutionName = $solutionName.Substring(0, $solutionName.Length - 4);
         }
 
-        dotnet build "$env:GITHUB_WORKSPACE/TargetRepo/$($dirPath)/$($solutionName).slnx";
+        # An empty relative dir path means the solution lives at the target repo root
+        $solutionPath = "$env:GITHUB_WORKSPACE/TargetRepo";
+
+        if (-not [string]::IsNullOrEmpty($dirPath)) {
+            $solutionPath = "$solutionPath/$dirPath";
+        }
+
+        dotnet build "$solutionPath/$($solutionName).slnx";

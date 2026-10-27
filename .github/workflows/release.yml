@@ -152,7 +152,6 @@ jobs:
           target-solution-name: "VelaptorAseprite"
           target-owner-name: "KinsonDigital"
           target-repo-name: "VelaptorAseprite"
-          target-relative-dir-path: "VelaptorAseprite"
           target-ref: "preview"
           velaptor-branch: "${{ github.ref_name }}"
           dotnet-sdk-version: "${{ vars.NET_SDK_VERSION }}"
