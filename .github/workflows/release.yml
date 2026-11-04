@@ -38,7 +38,7 @@ on:
 jobs:
   get_and_validate_version:
     name: Get And Validate Version
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     outputs:
       version: ${{ steps.get-version.outputs.version }}
     steps:
@@ -99,7 +99,7 @@ jobs:
   # Ensure that the sample projects in the VelaptorDocs repo build
   build_sample_projects:
     name: Build Sample Projects
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -120,7 +120,7 @@ jobs:
   # Ensure that the VelaptorTemplates project builds
   build_velaptor_templates:
     name: Build Velaptor Templates
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -140,7 +140,7 @@ jobs:
   # Ensure that the VelaptorAseprite project builds
   build_velaptor_aseprite:
     name: Build Velaptor Aseprite
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
       - name: Checkout Repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -206,7 +206,7 @@ jobs:
   # Execute the full Velaptor docs release workflow after the library release is done.
   release_velaptor_docs:
     name: Release Velaptor Docs
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [get_and_validate_version, validate_release, build_velaptor,
       build_sample_projects, build_velaptor_templates, build_velaptor_aseprite,
       run_tests, perform_release]
@@ -228,7 +228,7 @@ jobs:
 
   send_release_announcements:
     name: Send Release Announcements
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     needs: [get_and_validate_version, validate_release, build_velaptor,
       build_sample_projects, build_velaptor_templates, build_velaptor_aseprite,
       run_tests, perform_release]
