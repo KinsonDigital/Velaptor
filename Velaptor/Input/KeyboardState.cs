@@ -15,7 +15,7 @@ using ExtensionMethods;
 /// </summary>
 public record struct KeyboardState
 {
-    private static readonly int Capacity = Enum.GetNames(typeof(KeyCode)).Length;
+    private static readonly int Capacity = Enum.GetNames<KeyCode>().Length;
 
     /// <summary>
     /// Gets the state of the keys.
