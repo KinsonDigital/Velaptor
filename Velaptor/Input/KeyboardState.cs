@@ -106,12 +106,7 @@ public record struct KeyboardState
     {
         InitKeyStates();
 
-        if (!KeyStates.TryGetValue(key, out var value))
-        {
-            return false;
-        }
-
-        return value;
+        return KeyStates.TryGetValue(key, out var value) && value;
     }
 
     /// <summary>

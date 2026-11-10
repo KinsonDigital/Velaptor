@@ -25,6 +25,7 @@ using Silk.NET.Maths;
 using Silk.NET.Windowing;
 using Telemetry;
 using Services;
+using Silk.NET.Input.Extensions;
 using SilkIWindow = Silk.NET.Windowing.IWindow;
 using SilkMouseButton = Silk.NET.Input.MouseButton;
 using SilkWindowBorder = Silk.NET.Windowing.WindowBorder;
@@ -46,6 +47,9 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private readonly IPushReactable pushReactable;
     private readonly IPushReactable<MouseStateData> mouseReactable;
     private readonly IPushReactable<KeyboardKeyStateData> keyboardReactable;
+    private readonly IPushReactable<GameCtrlButtonStateData> gameCtrlBtnReactable;
+    private readonly IPushReactable<GameCtrlThumbstickStateData> gameCtrlThumbstickReactable;
+    private readonly IPushReactable<GameCtrlTriggerStateData> gameCtrlTriggerReactable;
     private readonly IPushReactable<ViewPortSizeData> viewPortReactable;
     private readonly IPushReactable<WindowSizeData> pushWinSizeReactable;
     private readonly Dictionary<string, CachedValue<string>> cachedStringProps = new ();
@@ -112,6 +116,9 @@ internal sealed class WgpuWindow : VelaptorIWindow
         this.pushReactable = reactableFactory.CreateNoDataPushReactable();
         this.mouseReactable = reactableFactory.CreateMouseReactable();
         this.keyboardReactable = reactableFactory.CreateKeyboardReactable();
+        this.gameCtrlBtnReactable = reactableFactory.CreateGameCtrlButtonReactable();
+        this.gameCtrlThumbstickReactable = reactableFactory.CreateGameCtrlThumbstickReactable();
+        this.gameCtrlTriggerReactable = reactableFactory.CreateGameCtrlTriggerReactable();
         this.viewPortReactable = reactableFactory.CreateViewPortReactable();
         this.pushWinSizeReactable = reactableFactory.CreatePushWindowSizeReactable();
         var pullWinSizeReactable = reactableFactory.CreatePullWindowSizeReactable();
@@ -325,6 +332,20 @@ internal sealed class WgpuWindow : VelaptorIWindow
         this.inputContext.Mice[0].MouseMove += MouseMove_MouseMove;
         this.inputContext.Mice[0].Scroll += MouseInput_MouseScroll;
 
+        // TODO: Add connection changed capability
+        // The connection changed event will send an update to GameController subscriptions about if any pads are connected and the total
+
+        // TODO: Need to figure out if we want to check if any pads are connected here, or in the connection changed event
+        // If the gamepad is already connected, most likely the event will not fire, so we have to manually check what is connected.
+        // If something is already connected, or has been detected as connected, we need to 'wire up' all of the game pad events.
+        // If we can detect when something is disconnected, we need to unsubscribe from the events.
+        // The event subscriptions below are temporary and for testing/developing. Once we get everything working, we can tackle this issue
+
+        this.inputContext.Gamepads[0].ButtonDown += GameCtrl_OnButtonDown;
+        this.inputContext.Gamepads[0].ButtonUp += GameCtrl_OnButtonUp;
+        this.inputContext.Gamepads[0].ThumbstickMoved += GameCtrl_OnThumbstickMoved;
+        this.inputContext.Gamepads[0].TriggerMoved += GameCtrl_OnTriggerMoved;
+
         // Manually invoke the resize to update the rest of the system, such as the viewport.
         Window_Resize(new Vector2D<int>((int)width, (int)height));
     }
@@ -424,18 +445,11 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void Window_Update(double time)
     {
-        var frameTime = new FrameTime
-        {
-            ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
-        };
+        var frameTime = new FrameTime { ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0), };
 
         Update?.Invoke(frameTime);
 
-        this.mouseStateData = this.mouseStateData with
-        {
-            ScrollDirection = MouseScrollDirection.None,
-            ScrollWheelValue = 0,
-        };
+        this.mouseStateData = this.mouseStateData with { ScrollDirection = MouseScrollDirection.None, ScrollWheelValue = 0, };
 
         this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
     }
@@ -445,10 +459,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void Window_Render(double time)
     {
-        var frameTime = new FrameTime
-        {
-            ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
-        };
+        var frameTime = new FrameTime { ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0), };
 
         Draw?.Invoke(frameTime);
 
@@ -480,29 +491,21 @@ internal sealed class WgpuWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Invoked when a mouse button is pressed.
+    /// Invoked when a mouse button transitions to the down position.
     /// </summary>
     private void MouseInput_MouseDown(IMouse mouse, SilkMouseButton button)
     {
-        this.mouseStateData = this.mouseStateData with
-        {
-            Button = (VelaptorMouseButton)button,
-            ButtonIsDown = true,
-        };
+        this.mouseStateData = this.mouseStateData with { Button = (VelaptorMouseButton)button, ButtonIsDown = true, };
 
         this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
     }
 
     /// <summary>
-    /// Invoked when a mouse button is released.
+    /// Invoked when a mouse button transitions to the up position.
     /// </summary>
     private void MouseInput_MouseUp(IMouse mouse, SilkMouseButton button)
     {
-        this.mouseStateData = this.mouseStateData with
-        {
-            Button = (VelaptorMouseButton)button,
-            ButtonIsDown = false,
-        };
+        this.mouseStateData = this.mouseStateData with { Button = (VelaptorMouseButton)button, ButtonIsDown = false, };
 
         this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
     }
@@ -531,13 +534,80 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void MouseMove_MouseMove(IMouse mouse, Vector2 position)
     {
-        this.mouseStateData = this.mouseStateData with
-        {
-            X = (int)position.X,
-            Y = (int)position.Y,
-        };
+        this.mouseStateData = this.mouseStateData with { X = (int)position.X, Y = (int)position.Y, };
 
         this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
+    }
+
+    /// <summary>
+    /// Invoked when a game controller button transitions to the down position.
+    /// </summary>
+    private void GameCtrl_OnButtonDown(IGamepad pad, Button btn)
+    {
+        var gameCtrlBtnStateData = new GameCtrlButtonStateData { Button = (ControllerButton)btn.Name, IsDown = btn.Pressed, };
+
+        this.gameCtrlBtnReactable.Push(PushNotifications.GameCtrlButtonStateChangedId, gameCtrlBtnStateData);
+    }
+
+    /// <summary>
+    /// Invoked when a game controller button transitions to the up position.
+    /// </summary>
+    private void GameCtrl_OnButtonUp(IGamepad pad, Button btn)
+    {
+        var gameCtrlBtnStateData = new GameCtrlButtonStateData { Button = (ControllerButton)btn.Name, IsDown = btn.Pressed, };
+
+        this.gameCtrlBtnReactable.Push(PushNotifications.GameCtrlButtonStateChangedId, gameCtrlBtnStateData);
+    }
+
+    /// <summary>
+    /// Invoked when the game controller thumbstick states have changed.
+    /// </summary>
+    private void GameCtrl_OnThumbstickMoved(IGamepad pad, Thumbstick stick)
+    {
+        var gameCtrlStickData = new GameCtrlThumbstickStateData
+        {
+            Direction = stick.Direction, Position = stick.Position, X = stick.X, Y = stick.Y,
+        };
+
+        // If the thumbstick is the left thumbstick
+        if (pad.LeftThumbstick().Index == stick.Index)
+        {
+            gameCtrlStickData = gameCtrlStickData with { IsLeftStick = true, IsRightStick = false, };
+        }
+        else if (pad.RightThumbstick().Index == stick.Index)
+        {
+            gameCtrlStickData = gameCtrlStickData with { IsRightStick = true, IsLeftStick = false, };
+        }
+        else
+        {
+            // TODO: Find better exception
+            throw new Exception("The thumbstick is unrecognized.");
+        }
+
+        this.gameCtrlThumbstickReactable.Push(PushNotifications.GameCtrlThumbstickStateChangedId, gameCtrlStickData);
+    }
+
+    /// <summary>
+    /// Invoked when game controller trigger states have changed.
+    /// </summary>
+    private void GameCtrl_OnTriggerMoved(IGamepad pad, Trigger trigger)
+    {
+        var gameCtrlTriggerData = new GameCtrlTriggerStateData
+        {
+            Position = trigger.Position,
+        };
+
+        if (trigger.Index == 0)
+        {
+            gameCtrlTriggerData = gameCtrlTriggerData with { IsLeftTrigger = true, IsRightTrigger = false };
+            this.gameCtrlTriggerReactable.Push(PushNotifications.GameCtrlTriggerStateChangedId, gameCtrlTriggerData);
+        }
+
+        if (trigger.Index == 1)
+        {
+            gameCtrlTriggerData = gameCtrlTriggerData with { IsRightTrigger = true, IsLeftTrigger = false };
+            this.gameCtrlTriggerReactable.Push(PushNotifications.GameCtrlTriggerStateChangedId, gameCtrlTriggerData);
+        }
     }
 
     /// <summary>
@@ -559,6 +629,8 @@ internal sealed class WgpuWindow : VelaptorIWindow
             this.inputContext.Mice[0].MouseUp -= MouseInput_MouseUp;
             this.inputContext.Mice[0].MouseMove -= MouseMove_MouseMove;
             this.inputContext.Mice[0].Scroll -= MouseInput_MouseScroll;
+            this.inputContext.Gamepads[0].ButtonDown -= GameCtrl_OnButtonDown;
+            this.inputContext.Gamepads[0].ButtonUp -= GameCtrl_OnButtonUp;
         }
 
         this.silkWindow.Load -= Window_Load;
@@ -605,7 +677,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
         var mainDisplay = this.systemDisplayService.MainDisplay;
 
         float ToDisplayScale(float value) => value * mainDisplay.HorizontalDPI /
-                   (this.platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f);
+                                             (this.platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f);
 
         var halfWidth = ToDisplayScale(Width / 2f);
         var halfHeight = ToDisplayScale(Height / 2f);

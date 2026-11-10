@@ -22,7 +22,8 @@ internal class ReactableFactory : IReactableFactory
     public IPushReactable CreateNoDataPushReactable() => IoC.Container.GetInstance<IPushReactable>();
 
     /// <inheritdoc/>
-    public IPushReactable<RequiredBufferCapacityData> CreateResizeBufferReactable() => IoC.Container.GetInstance<IPushReactable<RequiredBufferCapacityData>>();
+    public IPushReactable<RequiredBufferCapacityData> CreateResizeBufferReactable() =>
+        IoC.Container.GetInstance<IPushReactable<RequiredBufferCapacityData>>();
 
     /// <inheritdoc/>
     public IPushReactable<BatchSizeData> CreateBatchSizeReactable() => IoC.Container.GetInstance<IPushReactable<BatchSizeData>>();
@@ -41,6 +42,18 @@ internal class ReactableFactory : IReactableFactory
 
     /// <inheritdoc/>
     public IPushReactable<KeyboardKeyStateData> CreateKeyboardReactable() => IoC.Container.GetInstance<IPushReactable<KeyboardKeyStateData>>();
+
+    /// <inheritdoc/>
+    public IPushReactable<GameCtrlButtonStateData> CreateGameCtrlButtonReactable() =>
+        IoC.Container.GetInstance<IPushReactable<GameCtrlButtonStateData>>();
+
+    /// <inheritdoc/>
+    public IPushReactable<GameCtrlThumbstickStateData> CreateGameCtrlThumbstickReactable() =>
+        IoC.Container.GetInstance<IPushReactable<GameCtrlThumbstickStateData>>();
+
+    /// <inheritdoc/>
+    public IPushReactable<GameCtrlTriggerStateData> CreateGameCtrlTriggerReactable() =>
+        IoC.Container.GetInstance<IPushReactable<GameCtrlTriggerStateData>>();
 
     /// <inheritdoc/>
     public IPushReactable<DisposeTextureData> CreateDisposeTextureReactable() => IoC.Container.GetInstance<IPushReactable<DisposeTextureData>>();
