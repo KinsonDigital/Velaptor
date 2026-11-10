@@ -65,6 +65,18 @@ internal interface IReactableFactory
     IPushReactable<KeyboardKeyStateData> CreateKeyboardReactable();
 
     /// <summary>
+    /// Creates a game controller button reactable.
+    /// </summary>
+    /// <returns>The reactable.</returns>
+    IPushReactable<GameCtrlButtonStateData> CreateGameCtrlButtonReactable();
+
+    /// <summary>
+    /// Creates a game controller thumbstick reactable.
+    /// </summary>
+    /// <returns>The reactable.</returns>
+    IPushReactable<GameCtrlThumbstickStateData> CreateGameCtrlThumbstickReactable();
+
+    /// <summary>
     /// Creates a dispose texture reactable.
     /// </summary>
     /// <returns>The reactable.</returns>

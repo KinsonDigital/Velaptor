@@ -5,15 +5,25 @@
 namespace VelaptorTesting;
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
+using System.Text;
 using SimpleInjector;
 using SimpleInjector.Diagnostics;
 using Container = SimpleInjector.Container;
 
 public static class ExtensionMethods
 {
+    private static readonly char[] UpperCaseChars =
+    [
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
+        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
+        'U', 'V', 'W', 'X', 'Y', 'Z'
+    ];
+
     /// <summary>
     /// Registers that a new instance of <typeparamref name="TImplementation"/> will be returned every time
     /// a <typeparamref name="TService"/> is requested (transient).
@@ -115,6 +125,41 @@ public static class ExtensionMethods
     public static Point ToPoint(this Vector2 value) => new ((int)value.X, (int)value.Y);
 
     /// <summary>
+    /// Splits the given <param name="value"></param> based on uppercase characters.
+    /// </summary>
+    /// <param name="value">The value to split.</param>
+    /// <returns>The value returned as a list of sections.</returns>
+    public static string SplitByUpperCase(this string value)
+    {
+        var sections = new List<string>();
+
+        var currentSection = new StringBuilder();
+
+        for (var i = 0; i < value.Length; i++)
+        {
+            var character = value[i];
+
+            if (UpperCaseChars.Contains(character) && i != 0)
+            {
+                sections.Add(currentSection.ToString());
+
+                currentSection.Clear();
+                currentSection.Append(character);
+            }
+            else
+            {
+                currentSection.Append(character);
+            }
+        }
+
+        sections.Add(currentSection.ToString());
+
+        var result = sections.Aggregate(string.Empty, (current, section) => current + $"{section} ");
+
+        return result.TrimEnd(' ');
+    }
+
+    /// <summary>
     /// Suppresses SimpleInjector diagnostic warnings related to disposing of objects when they
     /// inherit from <see cref="IDisposable"/>.
     /// </summary>
@@ -124,6 +169,7 @@ public static class ExtensionMethods
     private static void SuppressDisposableTransientWarning<T>(this Container container)
     {
         var registration = container.GetRegistration(typeof(T))?.Registration;
-        registration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
+        registration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent,
+            "Disposing of objects to be disposed of manually by the library.");
     }
 }

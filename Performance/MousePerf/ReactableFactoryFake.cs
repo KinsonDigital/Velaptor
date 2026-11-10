@@ -46,6 +46,12 @@ internal sealed class ReactableFactoryFake : IReactableFactory
     public IPushReactable<KeyboardKeyStateData> CreateKeyboardReactable() => throw new NotImplementedException();
 
     /// <inheritdoc/>
+    public IPushReactable<GameCtrlButtonStateData> CreateGameCtrlButtonReactable() => throw new NotImplementedException();
+
+    /// <inheritdoc/>
+    public IPushReactable<GameCtrlThumbstickStateData> CreateGameCtrlThumbstickReactable() => throw new NotImplementedException();
+
+    /// <inheritdoc/>
     public IPushReactable<DisposeTextureData> CreateDisposeTextureReactable() => throw new NotImplementedException();
 
     /// <inheritdoc/>

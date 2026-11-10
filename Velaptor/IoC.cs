@@ -144,6 +144,7 @@ internal static class IoC
         IoCContainer.Register<IBatchingManager, BatchingManager>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
         IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
+        IoCContainer.Register<IAppInput<GameControllerState>, GameController>(Lifestyle.Singleton);
         IoCContainer.Register<IFrameMetricsTracker>(() => new FrameMetricsTracker(), Lifestyle.Singleton);
 
         IoCContainer.RegisterSingleton(() => new HttpClient { Timeout = TimeSpan.FromSeconds(5) });
@@ -303,6 +304,8 @@ internal static class IoC
         IoCContainer.Register<IPullReactable<WindowSizeData>, PullReactable<WindowSizeData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<MouseStateData>, PushReactable<MouseStateData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<KeyboardKeyStateData>, PushReactable<KeyboardKeyStateData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<GameCtrlButtonStateData>, PushReactable<GameCtrlButtonStateData>>(Lifestyle.Singleton);
+        IoCContainer.Register<IPushReactable<GameCtrlThumbstickStateData>, PushReactable<GameCtrlThumbstickStateData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<DisposeTextureData>, PushReactable<DisposeTextureData>>(Lifestyle.Singleton);
         IoCContainer.Register<IPushReactable<DisposeAudioData>, PushReactable<DisposeAudioData>>(Lifestyle.Singleton);
         IoCContainer.Register<IBatchPullReactable<TextureBatchItem>, BatchPullReactable<TextureBatchItem>>(Lifestyle.Singleton);

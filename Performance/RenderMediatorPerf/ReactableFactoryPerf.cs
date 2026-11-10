@@ -143,6 +143,12 @@ internal sealed class ReactableFactoryPerf : IReactableFactory
     public IPushReactable<KeyboardKeyStateData> CreateKeyboardReactable() =>
         throw new NotImplementedException("Not needed for perf testing");
 
+    public IPushReactable<GameCtrlButtonStateData> CreateGameCtrlButtonReactable() =>
+        throw new NotImplementedException("Not needed for perf testing");
+
+    public IPushReactable<GameCtrlThumbstickStateData> CreateGameCtrlThumbstickReactable() =>
+        throw new NotImplementedException("Not needed for perf testing");
+
     /// <inheritdoc/>
     public IPushReactable<DisposeTextureData> CreateDisposeTextureReactable() =>
         throw new NotImplementedException("Not needed for perf testing");

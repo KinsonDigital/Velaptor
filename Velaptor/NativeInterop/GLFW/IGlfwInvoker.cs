@@ -130,4 +130,7 @@ internal interface IGlfwInvoker : IDisposable
     /// </para>
     /// </remarks>
     GlfwVideoMode GetVideoMode(nint monitor);
+
+    /// <inheritdoc cref="Silk.NET.GLFW.Glfw.UpdateGamepadMappings" />
+    void UpdateGamepadMappings(string newMappings);
 }
