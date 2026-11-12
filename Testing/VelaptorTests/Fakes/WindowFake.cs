@@ -10,7 +10,6 @@ using Velaptor.Content;
 using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.UI;
-using Velaptor.WebGpu.Batching;
 
 /// <summary>
 /// Used for the purpose of testing the abstract <see cref="Window"/> class.

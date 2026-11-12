@@ -5,9 +5,12 @@
 namespace VelaptorTesting;
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Linq;
 using System.Numerics;
+using System.Text;
 using SimpleInjector;
 using SimpleInjector.Diagnostics;
 using Container = SimpleInjector.Container;
