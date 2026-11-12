@@ -13,6 +13,8 @@ using Silk.NET.Windowing;
 internal sealed class NativeInputFactory : INativeInputFactory
 {
     private readonly IWindow window;
+    private IInputContext? inputContext;
+    private bool isDisposed;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NativeInputFactory"/> class.
@@ -26,5 +28,23 @@ internal sealed class NativeInputFactory : INativeInputFactory
 
     /// <inheritdoc/>
     [ExcludeFromCodeCoverage(Justification = "Too complicated to mock SILK static method 'IWindow.CreateInput()'")]
-    public IInputContext CreateInput() => this.window.CreateInput();
+    public IInputContext CreateInput()
+    {
+        this.inputContext ??= this.window.CreateInput();
+
+        return this.inputContext;
+    }
+
+    /// <inheritdoc cref="IDisposable.Dispose"/>
+    public void Dispose()
+    {
+        if (this.isDisposed)
+        {
+            return;
+        }
+
+        this.inputContext?.Dispose();
+
+        this.isDisposed = true;
+    }
 }

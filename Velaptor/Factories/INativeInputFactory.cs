@@ -4,12 +4,13 @@
 
 namespace Velaptor.Factories;
 
+using System;
 using Silk.NET.Input;
 
 /// <summary>
 /// Creates an input object that gives access to native input hardware.
 /// </summary>
-internal interface INativeInputFactory
+internal interface INativeInputFactory : IDisposable
 {
     /// <summary>
     /// Creates a new input object.
