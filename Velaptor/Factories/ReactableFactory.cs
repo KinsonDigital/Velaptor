@@ -22,7 +22,8 @@ internal class ReactableFactory : IReactableFactory
     public IPushReactable CreateNoDataPushReactable() => IoC.Container.GetInstance<IPushReactable>();
 
     /// <inheritdoc/>
-    public IPushReactable<RequiredBufferCapacityData> CreateResizeBufferReactable() => IoC.Container.GetInstance<IPushReactable<RequiredBufferCapacityData>>();
+    public IPushReactable<RequiredBufferCapacityData> CreateResizeBufferReactable() =>
+        IoC.Container.GetInstance<IPushReactable<RequiredBufferCapacityData>>();
 
     /// <inheritdoc/>
     public IPushReactable<BatchSizeData> CreateBatchSizeReactable() => IoC.Container.GetInstance<IPushReactable<BatchSizeData>>();

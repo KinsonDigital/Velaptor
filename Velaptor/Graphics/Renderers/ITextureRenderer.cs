@@ -661,7 +661,8 @@ public interface ITextureRenderer : IDisposable
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
-    void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color color, RenderEffects effects, int layer = 0);
+    void Render(ITexture texture, Rectangle srcRect, Rectangle destRect, float size, float angle, Color color, RenderEffects effects,
+        int layer = 0);
 
     /// <summary>
     /// Renders the <see cref="Texture"/> in the given <paramref name="atlas"/> using the given parameters.
@@ -951,5 +952,6 @@ public interface ITextureRenderer : IDisposable
     ///         <item>Texture 5</item>
     ///     </list>
     /// </remarks>
-    void Render(IAtlasData atlas, string subTextureName, Vector2 pos, float angle, float size, Color color, RenderEffects effects, int frameNumber = 0, int layer = 0);
+    void Render(IAtlasData atlas, string subTextureName, Vector2 pos, float angle, float size, Color color, RenderEffects effects,
+        int frameNumber = 0, int layer = 0);
 }

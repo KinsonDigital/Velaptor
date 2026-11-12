@@ -169,6 +169,7 @@ public static class ExtensionMethods
     private static void SuppressDisposableTransientWarning<T>(this Container container)
     {
         var registration = container.GetRegistration(typeof(T))?.Registration;
-        registration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent, "Disposing of objects to be disposed of manually by the library.");
+        registration?.SuppressDiagnosticWarning(DiagnosticType.DisposableTransientComponent,
+            "Disposing of objects to be disposed of manually by the library.");
     }
 }
