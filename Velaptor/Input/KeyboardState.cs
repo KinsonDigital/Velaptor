@@ -11,7 +11,7 @@ using System.Diagnostics.CodeAnalysis;
 using ExtensionMethods;
 
 /// <summary>
-/// Represents a single keyboard state at a particular time.
+/// Represents the state of a keyboard device.
 /// </summary>
 public record struct KeyboardState
 {
