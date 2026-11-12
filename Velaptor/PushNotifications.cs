@@ -32,6 +32,21 @@ internal static class PushNotifications
     public static Guid KeyboardStateChangedId { get; } = new ("a18686c8-10c9-4ba9-afaf-ceea77c130e2");
 
     /// <summary>
+    /// Gets the unique <see cref="Guid"/> for the push notifications for when any game controller button states have changed.
+    /// </summary>
+    public static Guid GameCtrlButtonStateChangedId { get; } = new ("dda7abc6-a6df-4f90-b1fa-b916e7313a94");
+
+    /// <summary>
+    /// Gets the unique <see cref="Guid"/> for the push notifications for when any game controller thumbstick states have changed.
+    /// </summary>
+    public static Guid GameCtrlThumbstickStateChangedId { get; } = new ("5e9bde95-fb25-4a3f-ba5d-fd910f9d015c");
+
+    /// <summary>
+    /// Gets the unique <see cref="Guid"/> for the push notifications for when any game controller trigger states have changed.
+    /// </summary>
+    public static Guid GameCtrlTriggerStateChangedId { get; } = new ("767d1438-1977-468c-b99d-8a8b89affd4e");
+
+    /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when a texture is disposed.
     /// </summary>
     public static Guid TextureDisposedId { get; } = new ("953d4a76-6c3e-49b2-a609-e73b2add942a");

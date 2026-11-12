@@ -19,7 +19,6 @@ using Velaptor.Graphics.Renderers;
 using Velaptor.Input;
 using Velaptor.Scene;
 using Velaptor.UI;
-using Velaptor.WebGpu.Batching;
 using Xunit;
 
 /// <summary>

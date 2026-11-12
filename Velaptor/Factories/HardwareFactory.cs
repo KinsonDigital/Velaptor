@@ -29,6 +29,12 @@ public static class HardwareFactory
     public static IAppInput<MouseState> GetMouse() => IoC.Container.GetInstance<IAppInput<MouseState>>();
 
     /// <summary>
+    /// Gets a game controller object.
+    /// </summary>
+    /// <returns>The game controller singleton object.</returns>
+    public static IAppInput<GameControllerState> GetGameController() => IoC.Container.GetInstance<IAppInput<GameControllerState>>();
+
+    /// <summary>
     /// Gets all the displays in the system.
     /// </summary>
     /// <returns>The list of displays.</returns>
@@ -36,7 +42,7 @@ public static class HardwareFactory
     {
         var displayService = IoC.Container.GetInstance<ISystemDisplayService>();
 
-        return [..displayService.Displays];
+        return [.. displayService.Displays];
     }
 
     /// <summary>

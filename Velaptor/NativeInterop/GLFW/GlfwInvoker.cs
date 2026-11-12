@@ -100,6 +100,9 @@ internal sealed class GlfwInvoker : IGlfwInvoker
         return result;
     }
 
+    /// <inheritdoc/>
+    public void UpdateGamepadMappings(string newMappings) => GlfwProvider.GLFW.Value.UpdateGamepadMappings(newMappings);
+
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public void Dispose()
     {

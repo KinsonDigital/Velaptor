@@ -39,7 +39,7 @@ internal sealed class TextureGpuBuffer : WebGpuBufferBase<TextureBatchItem>
     /// Initializes a new instance of the <see cref="TextureGpuBuffer"/> class.
     /// </summary>
     /// <param name="grfxDevice">The graphics device.</param>
-    /// <param name="reactableFactory">Creates reactables.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     public TextureGpuBuffer(IGraphicsDevice grfxDevice, IReactableFactory reactableFactory)
         : base(grfxDevice)
     {

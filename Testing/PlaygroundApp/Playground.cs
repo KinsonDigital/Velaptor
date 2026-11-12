@@ -12,7 +12,6 @@ using Velaptor.Factories;
 using Velaptor.Graphics;
 using Velaptor.Graphics.Renderers;
 using Velaptor.UI;
-using Velaptor.WebGpu.Batching;
 
 /// <summary>
 /// Used to prototype, test, debug, and play around with Velaptor.
