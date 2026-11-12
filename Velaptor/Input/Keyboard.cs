@@ -6,6 +6,7 @@
 namespace Velaptor.Input;
 
 using System;
+using System.Collections.Generic;
 using Services;
 
 /// <summary>
@@ -25,6 +26,14 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
 
         this.keyboardDataService = keyboardDataService;
     }
+
+    // TODO: Implement this
+    /// <inheritdoc/>
+    public int TotalDevices { get; }
+    
+    // TODO: Implement this
+    /// <inheritdoc/>
+    public IReadOnlyCollection<string> ConnectedDevices { get; }
 
     /// <summary>
     /// Gets the current state of the keyboard.

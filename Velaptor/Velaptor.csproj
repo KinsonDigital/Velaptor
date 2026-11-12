@@ -138,6 +138,7 @@
     <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Bold.ttf" />
     <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-BoldItalic.ttf" />
     <EmbeddedResource Include="Content\Fonts\EmbeddedResources\TimesNewRoman-Italic.ttf" />
+    <EmbeddedResource Include="Input\game-controller-db.txt" />
   </ItemGroup>
 
   <ItemGroup>

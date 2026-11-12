@@ -15,7 +15,7 @@ using ReactableData;
 /// <inheritdoc/>
 internal sealed class KeyboardDataService : IKeyboardDataService
 {
-    private static readonly int Capacity = Enum.GetNames(typeof(KeyCode)).Length;
+    private static readonly int Capacity = Enum.GetNames<KeyCode>().Length;
     private readonly Dictionary<KeyCode, bool> keyStates = new (Capacity);
     private readonly IDisposable unsubscriber;
     private bool isDisposed;

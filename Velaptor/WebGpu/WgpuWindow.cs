@@ -109,6 +109,8 @@ internal sealed class WgpuWindow : VelaptorIWindow
         this.loggingService = loggingService;
         this.frameMetricsTracker = frameMetricsTracker;
 
+        // NOTE: Make sure if any new reactables are added here, to call the
+        // 'UnsubscribeAll()' method for the reactable in the 'Reset()' method.
         this.pushReactable = reactableFactory.CreateNoDataPushReactable();
         this.mouseReactable = reactableFactory.CreateMouseReactable();
         this.keyboardReactable = reactableFactory.CreateKeyboardReactable();
@@ -480,7 +482,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Invoked when a mouse button is pressed.
+    /// Invoked when a mouse button transitions to the down position.
     /// </summary>
     private void MouseInput_MouseDown(IMouse mouse, SilkMouseButton button)
     {
@@ -494,7 +496,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     }
 
     /// <summary>
-    /// Invoked when a mouse button is released.
+    /// Invoked when a mouse button transitions to the up position.
     /// </summary>
     private void MouseInput_MouseUp(IMouse mouse, SilkMouseButton button)
     {
@@ -546,6 +548,10 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private void Cleanup()
     {
         this.pushReactable.UnsubscribeAll();
+        this.mouseReactable.UnsubscribeAll();
+        this.keyboardReactable.UnsubscribeAll();
+        this.viewPortReactable.UnsubscribeAll();
+        this.pushWinSizeReactable.UnsubscribeAll();
 
         this.cachedStringProps.Clear();
         this.cachedIntProps.Clear();

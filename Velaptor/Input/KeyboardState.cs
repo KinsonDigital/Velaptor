@@ -11,11 +11,11 @@ using System.Diagnostics.CodeAnalysis;
 using ExtensionMethods;
 
 /// <summary>
-/// Represents a single keyboard state at a particular time.
+/// Represents the state of a keyboard device.
 /// </summary>
 public record struct KeyboardState
 {
-    private static readonly int Capacity = Enum.GetNames(typeof(KeyCode)).Length;
+    private static readonly int Capacity = Enum.GetNames<KeyCode>().Length;
 
     /// <summary>
     /// Gets the state of the keys.
@@ -106,12 +106,7 @@ public record struct KeyboardState
     {
         InitKeyStates();
 
-        if (!KeyStates.TryGetValue(key, out var value))
-        {
-            return false;
-        }
-
-        return value;
+        return KeyStates.TryGetValue(key, out var value) && value;
     }
 
     /// <summary>

@@ -53,7 +53,7 @@ public sealed class Camera2D : ICamera2D
     /// <summary>
     /// Initializes a new instance of the <see cref="Camera2D"/> class.
     /// </summary>
-    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications.</param>
+    /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     internal Camera2D(IReactableFactory reactableFactory)
     {
         ArgumentNullException.ThrowIfNull(reactableFactory);

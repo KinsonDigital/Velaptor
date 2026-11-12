@@ -8,7 +8,7 @@ using System.ComponentModel;
 using System.Drawing;
 
 /// <summary>
-/// Represents the state of the mouse.
+/// Represents the state of the mouse device.
 /// </summary>
 public readonly struct MouseState
 {
