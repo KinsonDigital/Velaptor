@@ -25,12 +25,6 @@ using Velaptor.WebGpu.Batching;
 public class MainWindow : Window
 {
     private const int WindowPadding = 10;
-    private static readonly char[] UpperCaseChars =
-    [
-        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-        'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-        'U', 'V', 'W', 'X', 'Y', 'Z'
-    ];
     private readonly IAppInput<KeyboardState> keyboard;
     private readonly IBatcher batcher;
     private readonly Button btnPrevScene;
@@ -212,41 +206,6 @@ public class MainWindow : Window
         base.OnDraw(frameTime);
 
         this.batcher.End();
-    }
-
-    /// <summary>
-    /// Splits the given <param name="value"></param> based on uppercase characters.
-    /// </summary>
-    /// <param name="value">The value to split.</param>
-    /// <returns>The value returned as a list of sections.</returns>
-    private static string SplitByUpperCase(string value)
-    {
-        var sections = new List<string>();
-
-        var currentSection = new StringBuilder();
-
-        for (var i = 0; i < value.Length; i++)
-        {
-            var character = value[i];
-
-            if (UpperCaseChars.Contains(character) && i != 0)
-            {
-                sections.Add(currentSection.ToString());
-
-                currentSection.Clear();
-                currentSection.Append(character);
-            }
-            else
-            {
-                currentSection.Append(character);
-            }
-        }
-
-        sections.Add(currentSection.ToString());
-
-        var result = sections.Aggregate(string.Empty, (current, section) => current + $"{section} ");
-
-        return result.TrimEnd(' ');
     }
 
     private void PrevScene_OnClick(object? sender, EventArgs e)
