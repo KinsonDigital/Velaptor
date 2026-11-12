@@ -546,6 +546,10 @@ internal sealed class WgpuWindow : VelaptorIWindow
     private void Cleanup()
     {
         this.pushReactable.UnsubscribeAll();
+        this.mouseReactable.UnsubscribeAll();
+        this.keyboardReactable.UnsubscribeAll();
+        this.viewPortReactable.UnsubscribeAll();
+        this.pushWinSizeReactable.UnsubscribeAll();
 
         this.cachedStringProps.Clear();
         this.cachedIntProps.Clear();
