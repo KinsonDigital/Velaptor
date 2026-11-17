@@ -7,6 +7,7 @@
 namespace Velaptor.Input;
 
 using System;
+using System.Collections.Frozen;
 using System.Collections.Generic;
 using System.Linq;
 using Carbonate;
@@ -18,36 +19,48 @@ using Silk.NET.Input;
 /// <summary>
 /// Provides functionality for game controllers.
 /// </summary>
-internal sealed class GameController : IAppInput<GameControllerState>
+internal sealed class GameController : IGameController
 {
-    private static readonly int Capacity = Enum.GetNames<ControllerButton>().Length;
-    private readonly Dictionary<ControllerButton, bool> btnStates = new (Capacity);
+    private readonly Dictionary<(int deviceIndex, ControllerButton btn), bool> btnStates = new ();
+    private readonly Dictionary<int, string> devices = new ();
+    private readonly ControllerButton[] controllerButtons = Enum.GetValues<ControllerButton>();
+    private readonly IGameControllerRumble gameCtrlRumble;
     private readonly IDisposable initUnsubscriber;
+    private readonly IDisposable rescanUnsubscriber;
     private readonly IDisposable shutDownUnsubscriber;
     private readonly INativeInputFactory inputFactory;
-    private GameCtrlThumbstickState leftGameCtrlThumbstickState;
-    private GameCtrlThumbstickState rightGameCtrlThumbstickState;
-    private GameCtrlTriggerState leftGameCtrlTriggerState;
-    private GameCtrlTriggerState rightGameCtrlTriggerState;
+    private readonly Dictionary<int, GameCtrlThumbstickState> leftGameCtrlThumbstickState = new ();
+    private readonly Dictionary<int, GameCtrlThumbstickState> rightGameCtrlThumbstickState = new ();
+    private FrozenSet<string> nameNames = FrozenSet<string>.Empty;
+    private FrozenSet<int> deviceIds = FrozenSet<int>.Empty;
+    private Dictionary<int, GameCtrlTriggerState> leftGameCtrlTriggerState = new ();
+    private Dictionary<int, GameCtrlTriggerState> rightGameCtrlTriggerState = new ();
+    private bool enabled = true;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="GameController"/> class.
     /// </summary>
+    /// <param name="gameCtrlRumble">Manages rumble/virations for game controllers.</param>
     /// <param name="glfwInvoker">Invokes GLFW functions.</param>
     /// <param name="resourceLoaderService">Loads the embedded <c>game-controller-db</c> resource file.</param>
     /// <param name="reactableFactory">Creates reactables for sending and receiving notifications with or without data.</param>
     /// <param name="inputFactory">Creates native input objects.</param>
     /// <exception cref="ArgumentNullException">Thrown when one of the arguments is a null reference.</exception>
     public GameController(
+        IGameControllerRumble gameCtrlRumble,
         IGlfwInvoker glfwInvoker,
         IEmbeddedResourceLoaderService<string> resourceLoaderService,
         IReactableFactory reactableFactory,
         INativeInputFactory inputFactory)
     {
+        // TODO: Test null params
+        ArgumentNullException.ThrowIfNull(gameCtrlRumble);
         ArgumentNullException.ThrowIfNull(glfwInvoker);
         ArgumentNullException.ThrowIfNull(resourceLoaderService);
         ArgumentNullException.ThrowIfNull(reactableFactory);
         ArgumentNullException.ThrowIfNull(inputFactory);
+
+        this.gameCtrlRumble = gameCtrlRumble;
 
         var dbData = resourceLoaderService.LoadResource("game-controller-db.txt");
         glfwInvoker.UpdateGamepadMappings(dbData);
@@ -61,6 +74,11 @@ internal sealed class GameController : IAppInput<GameControllerState>
             Init,
             () => this.initUnsubscriber?.Dispose());
 
+        this.rescanUnsubscriber = eventsReactable.CreateNonReceiveOrRespond(
+            PushNotifications.Update,
+            Rescan,
+            () => this.rescanUnsubscriber?.Dispose());
+
         this.shutDownUnsubscriber = eventsReactable.CreateNonReceiveOrRespond(
             PushNotifications.SystemShuttingDownId,
             ShutDown,
@@ -68,32 +86,122 @@ internal sealed class GameController : IAppInput<GameControllerState>
     }
 
     /// <inheritdoc/>
-    public int TotalDevices => this.inputFactory.CreateInput().Gamepads.Count;
+    public int TotalDevices => this.inputFactory.CreateInput().Gamepads.Where(i => i.IsConnected).ToArray().Length;
 
     /// <inheritdoc/>
-    public IReadOnlyCollection<string> ConnectedDevices =>
-        [.. this.inputFactory.CreateInput().Gamepads.Select((pad) => $"{pad.Name}({pad.Index})")];
+    public IReadOnlyCollection<string> ConnectedDeviceNames => this.nameNames;
 
-    /// <summary>
-    /// Gets the current state of the game controller.
-    /// </summary>
-    /// <returns>The date of the game controller.</returns>
-    public GameControllerState GetState()
+    /// <inheritdoc/>
+    public IReadOnlyCollection<int> ConnectedDeviceIds => this.deviceIds;
+
+    /// <inheritdoc/>
+    public GameControllerState GetState() => GetState(0);
+
+    /// <inheritdoc/>
+    public GameControllerState GetState(int id)
     {
         var gameCtrlState = new GameControllerState();
+        gameCtrlState = gameCtrlState with { Enabled = Enabled, IsConnected = this.devices.ContainsKey(id), Id = -1 };
 
-        foreach ((ControllerButton key, var state) in this.btnStates)
+        if (!gameCtrlState.IsConnected)
         {
-            gameCtrlState.ButtonStates[key] = state;
+            return gameCtrlState;
         }
 
-        gameCtrlState.LeftGameCtrlThumbstick = this.leftGameCtrlThumbstickState;
-        gameCtrlState.RightGameCtrlThumbstick = this.rightGameCtrlThumbstickState;
-        gameCtrlState.LeftGameCtrlTrigger = this.leftGameCtrlTriggerState;
-        gameCtrlState.RightGameCtrlTrigger = this.rightGameCtrlTriggerState;
+        foreach (((var deviceIndex, ControllerButton key), var state) in this.btnStates)
+        {
+            if (deviceIndex == id)
+            {
+                gameCtrlState.ButtonStates[key] = this.enabled && state;
+            }
+        }
+
+        gameCtrlState.Id = id;
+        gameCtrlState.Name = this.devices[id];
+
+        gameCtrlState.LightRumbleIntensity = this.enabled ? this.gameCtrlRumble.LightIntensity : 0;
+        gameCtrlState.HeavyRumbleIntensity = this.enabled ? this.gameCtrlRumble.HeavyIntensity : 0;
+
+        gameCtrlState.LeftGameCtrlThumbstick = this.enabled ? this.leftGameCtrlThumbstickState[id] : default;
+        gameCtrlState.RightGameCtrlThumbstick = this.enabled ? this.rightGameCtrlThumbstickState[id] : default;
+
+        gameCtrlState.LeftGameCtrlTrigger = this.enabled ? this.leftGameCtrlTriggerState[id] : default;
+        gameCtrlState.RightGameCtrlTrigger = this.enabled ? this.rightGameCtrlTriggerState[id] : default;
 
         return gameCtrlState;
     }
+
+    public bool Enabled
+    {
+        get => this.enabled;
+        set
+        {
+            this.enabled = value;
+            this.gameCtrlRumble.StopAllRumble();
+        }
+    }
+
+    // TODO: This will probably become a method once we add multi-controller support
+    public bool HasRumble => this.gameCtrlRumble.HasRumble;
+
+    public void RumbleLight(float intensity) => RumbleLight(intensity, uint.MaxValue);
+
+    public void RumbleLight(float intensity, uint durationMs)
+    {
+        if (!Enabled)
+        {
+            return;
+        }
+
+        this.gameCtrlRumble.RumbleLight(intensity, durationMs);
+    }
+
+    public void RumbleHeavy(float intensity) => RumbleHeavy(intensity, uint.MaxValue);
+
+    public void RumbleHeavy(float intensity, uint durationMs)
+    {
+        if (!Enabled)
+        {
+            return;
+        }
+
+        this.gameCtrlRumble.RumbleHeavy(intensity, durationMs);
+    }
+
+    public void StopLightRumble()
+    {
+        if (!Enabled)
+        {
+            return;
+        }
+
+        this.gameCtrlRumble.StopLightRumble();
+    }
+
+    public void StopHeavyRumble()
+    {
+        if (!Enabled)
+        {
+            return;
+        }
+
+        this.gameCtrlRumble.StopHeavyRumble();
+    }
+
+    public void StopAllRumble()
+    {
+        if (!Enabled)
+        {
+            return;
+        }
+
+        this.gameCtrlRumble.StopAllRumble();
+    }
+
+    /// <summary>
+    /// Rescans for any controllers that might have been connected, or disconnected.
+    /// </summary>
+    private void Rescan() => this.gameCtrlRumble.ScanForControllers();
 
     /// <summary>
     /// Initializes the game pad events.
@@ -101,10 +209,41 @@ internal sealed class GameController : IAppInput<GameControllerState>
     private void Init()
     {
         var inputContext = this.inputFactory.CreateInput();
-        inputContext.Gamepads[0].ButtonDown += GameCtrl_OnButtonDown;
-        inputContext.Gamepads[0].ButtonUp += GameCtrl_OnButtonUp;
-        inputContext.Gamepads[0].ThumbstickMoved += GameCtrl_OnThumbstickMoved;
-        inputContext.Gamepads[0].TriggerMoved += GameCtrl_OnTriggerMoved;
+
+        inputContext.ConnectionChanged += InputContextOnConnectionChanged;
+
+        foreach (IGamepad gamepad in inputContext.Gamepads)
+        {
+            // Add the device to the connected device list
+            if (gamepad.IsConnected)
+            {
+                this.devices.Add(gamepad.Index, gamepad.Name);
+            }
+
+            // Add all of the button states for this device
+            foreach (var ctrlBtn in this.controllerButtons)
+            {
+                this.btnStates.Add((gamepad.Index, ctrlBtn), false);
+            }
+
+            // Create state items for both thumbsticks for the device
+            this.leftGameCtrlThumbstickState.Add(gamepad.Index, default);
+            this.rightGameCtrlThumbstickState.Add(gamepad.Index, default);
+
+            // Create state items for both triggers for the device
+            this.leftGameCtrlTriggerState.Add(gamepad.Index, default);
+            this.rightGameCtrlTriggerState.Add(gamepad.Index, default);
+
+            gamepad.ButtonDown += GameCtrl_OnButtonDown;
+            gamepad.ButtonUp += GameCtrl_OnButtonUp;
+            gamepad.ThumbstickMoved += GameCtrl_OnThumbstickMoved;
+            gamepad.TriggerMoved += GameCtrl_OnTriggerMoved;
+        }
+
+        this.nameNames = this.devices.Values.ToFrozenSet();
+        this.deviceIds = this.devices.Keys.ToFrozenSet();
+
+        this.gameCtrlRumble.Init();
     }
 
     /// <summary>
@@ -113,21 +252,98 @@ internal sealed class GameController : IAppInput<GameControllerState>
     private void ShutDown()
     {
         var inputContext = this.inputFactory.CreateInput();
-        inputContext.Gamepads[0].ButtonDown -= GameCtrl_OnButtonDown;
-        inputContext.Gamepads[0].ButtonUp -= GameCtrl_OnButtonUp;
-        inputContext.Gamepads[0].ThumbstickMoved -= GameCtrl_OnThumbstickMoved;
-        inputContext.Gamepads[0].TriggerMoved -= GameCtrl_OnTriggerMoved;
+
+        foreach (IGamepad gamepad in inputContext.Gamepads)
+        {
+            gamepad.ButtonDown -= GameCtrl_OnButtonDown;
+            gamepad.ButtonUp -= GameCtrl_OnButtonUp;
+            gamepad.ThumbstickMoved -= GameCtrl_OnThumbstickMoved;
+            gamepad.TriggerMoved -= GameCtrl_OnTriggerMoved;
+        }
+
+        this.gameCtrlRumble.Dispose();
+    }
+
+    /// <summary>
+    /// Invoked when a device is connected or disconnected.
+    /// </summary>
+    private void InputContextOnConnectionChanged(IInputDevice device, bool isConnected)
+    {
+        if (device is not IGamepad gamepad)
+        {
+            return;
+        }
+
+        if (isConnected)
+        {
+            if (gamepad.IsConnected)
+            {
+                this.devices.Add(gamepad.Index, $"{gamepad.Name}({gamepad.Index})");
+            }
+
+            // Add all of the button states for this device
+            foreach (var ctrlBtn in this.controllerButtons)
+            {
+                this.btnStates.Add((gamepad.Index, ctrlBtn), false);
+            }
+
+            // Create state items for both thumbsticks for the device
+            this.leftGameCtrlThumbstickState.Add(gamepad.Index, default);
+            this.rightGameCtrlThumbstickState.Add(gamepad.Index, default);
+
+            // Create state items for both triggers for the device
+            this.leftGameCtrlTriggerState.Add(gamepad.Index, default);
+            this.rightGameCtrlTriggerState.Add(gamepad.Index, default);
+
+            gamepad.ButtonDown += GameCtrl_OnButtonDown;
+            gamepad.ButtonUp += GameCtrl_OnButtonUp;
+            gamepad.ThumbstickMoved += GameCtrl_OnThumbstickMoved;
+            gamepad.TriggerMoved += GameCtrl_OnTriggerMoved;
+        }
+        else
+        {
+            if (!gamepad.IsConnected)
+            {
+                this.devices.Remove(gamepad.Index);
+            }
+
+            gamepad.ButtonDown -= GameCtrl_OnButtonDown;
+            gamepad.ButtonUp -= GameCtrl_OnButtonUp;
+            gamepad.ThumbstickMoved -= GameCtrl_OnThumbstickMoved;
+            gamepad.TriggerMoved -= GameCtrl_OnTriggerMoved;
+
+            foreach (var ctrlBtn in this.controllerButtons)
+            {
+                var key = (device.Index, ctrlBtn);
+
+                if (this.btnStates.ContainsKey(key))
+                {
+                    this.btnStates.Remove((gamepad.Index, ctrlBtn));
+                }
+            }
+
+            // Remove state items for both thumbsticks for the device
+            this.leftGameCtrlThumbstickState.Remove(gamepad.Index);
+            this.rightGameCtrlThumbstickState.Remove(gamepad.Index);
+
+            // Remove state items for both triggers for the device
+            this.leftGameCtrlTriggerState.Remove(gamepad.Index);
+            this.rightGameCtrlTriggerState.Remove(gamepad.Index);
+        }
+
+        this.nameNames = this.devices.Values.ToFrozenSet();
+        this.deviceIds = this.devices.Keys.ToFrozenSet();
     }
 
     /// <summary>
     /// Invoked when a game controller button transitions to the down position.
     /// </summary>
-    private void GameCtrl_OnButtonDown(IGamepad pad, Button btn) => this.btnStates[(ControllerButton)btn.Name] = btn.Pressed;
+    private void GameCtrl_OnButtonDown(IGamepad pad, Button btn) => this.btnStates[(pad.Index, (ControllerButton)btn.Name)] = btn.Pressed;
 
     /// <summary>
     /// Invoked when a game controller button transitions to the up position.
     /// </summary>
-    private void GameCtrl_OnButtonUp(IGamepad pad, Button btn) => this.btnStates[(ControllerButton)btn.Name] = btn.Pressed;
+    private void GameCtrl_OnButtonUp(IGamepad pad, Button btn) => this.btnStates[(pad.Index, (ControllerButton)btn.Name)] = btn.Pressed;
 
     /// <summary>
     /// Invoked when the game controller thumbstick states have changed.
@@ -142,12 +358,12 @@ internal sealed class GameController : IAppInput<GameControllerState>
         // If the thumbstick is the left thumbstick
         if (pad.LeftThumbstick().Index == stick.Index)
         {
-            this.leftGameCtrlThumbstickState = gameCtrlStickData with { IsLeftStick = true, IsRightStick = false, };
+            this.leftGameCtrlThumbstickState[pad.Index] = gameCtrlStickData with { IsLeftStick = true, IsRightStick = false, };
         }
 
         if (pad.RightThumbstick().Index == stick.Index)
         {
-            this.rightGameCtrlThumbstickState = gameCtrlStickData with { IsRightStick = true, IsLeftStick = false };
+            this.rightGameCtrlThumbstickState[pad.Index] = gameCtrlStickData with { IsRightStick = true, IsLeftStick = false };
         }
     }
 
@@ -160,12 +376,12 @@ internal sealed class GameController : IAppInput<GameControllerState>
 
         if (trigger.Index == 0)
         {
-            this.leftGameCtrlTriggerState = gameCtrlTriggerData with { IsLeftTrigger = true, IsRightTrigger = false };
+            this.leftGameCtrlTriggerState[pad.Index] = gameCtrlTriggerData with { IsLeftTrigger = true, IsRightTrigger = false };
         }
 
         if (trigger.Index == 1)
         {
-            this.rightGameCtrlTriggerState = gameCtrlTriggerData with { IsRightTrigger = true, IsLeftTrigger = false };
+            this.rightGameCtrlTriggerState[pad.Index] = gameCtrlTriggerData with { IsRightTrigger = true, IsLeftTrigger = false };
         }
     }
 }
