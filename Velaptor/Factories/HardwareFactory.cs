@@ -32,7 +32,7 @@ public static class HardwareFactory
     /// Gets a game controller object.
     /// </summary>
     /// <returns>The game controller singleton object.</returns>
-    public static IAppInput<GameControllerState> GetGameController() => IoC.Container.GetInstance<IAppInput<GameControllerState>>();
+    public static IGameController GetGameController() => IoC.Container.GetInstance<IGameController>();
 
     /// <summary>
     /// Gets all the displays in the system.
@@ -42,7 +42,7 @@ public static class HardwareFactory
     {
         var displayService = IoC.Container.GetInstance<ISystemDisplayService>();
 
-        return [..displayService.Displays];
+        return [.. displayService.Displays];
     }
 
     /// <summary>

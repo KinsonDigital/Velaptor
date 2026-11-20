@@ -666,22 +666,22 @@ public enum ControllerButton
     /// <summary>
     /// The 'A' button.
     /// </summary>
-    A = 0,
+    South = 0,
 
     /// <summary>
     /// The 'B' button.
     /// </summary>
-    B,
+    East,
 
     /// <summary>
     /// The 'X' button.
     /// </summary>
-    X,
+    West,
 
     /// <summary>
     /// The 'Y' button.
     /// </summary>
-    Y,
+    North,
 
     /// <summary>
     /// The left bumper.

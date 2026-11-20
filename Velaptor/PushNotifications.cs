@@ -17,6 +17,11 @@ internal static class PushNotifications
     public static Guid WgpuReady { get; } = new ("2ef5c76f-c7ec-4f8b-b73e-c114b7cfbe2b");
 
     /// <summary>
+    /// Gets the unique <see cref="Guid"/> for push notifications for when the update loop has been executed.
+    /// </summary>
+    public static Guid Update { get; } = new ("1f2b1c2d-cbac-44a5-933b-8b0e43bba68b");
+
+    /// <summary>
     /// Gets the unique <see cref="Guid"/> for push notifications for when the batch size is set.
     /// </summary>
     public static Guid BatchSizeChangedId { get; } = new ("7819e8f0-9797-4bfd-b9ed-6505c8a6ca89");
