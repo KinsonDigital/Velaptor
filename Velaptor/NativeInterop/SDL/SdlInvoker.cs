@@ -1,0 +1,189 @@
+// <copyright file="SdlInvoker.cs" company="KinsonDigital">
+// Copyright (c) KinsonDigital. All rights reserved.
+// </copyright>
+
+/*
+ * RESOURCES:
+ * https://wiki.libsdl.org/SDL2/FrontPage
+ * https://wiki.libsdl.org/SDL2/CategoryAPI
+ * More info on macOS specific joystick detection:
+ *   https://github.com/libsdl-org/SDL/issues/12886
+ * SDL Game Controller DB:
+ *   https://github.com/mdqinc/SDL_GameControllerDB
+ */
+
+namespace Velaptor.NativeInterop.SDL;
+
+using System;
+using System.Runtime.InteropServices;
+using System.Text;
+using Silk.NET.SDL;
+
+internal sealed class SdlInvoker : ISdlInvoker
+{
+    public SdlInvoker()
+    {
+        Sdl = Sdl.GetApi();
+    }
+
+    public Sdl Sdl { get; }
+
+    public bool Init()
+    {
+        // TODO: Check if on macos and add 'Sdl.InitVideo' to flags
+
+        if (Sdl.Init(Sdl.InitJoystick | Sdl.InitEvents) != 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public string GetError()
+    {
+        string errorMsg;
+
+        unsafe
+        {
+            errorMsg = Marshal.PtrToStringAnsi((nint)Sdl.GetError()) ?? string.Empty;
+        }
+
+        return errorMsg;
+    }
+
+    public int JoystickRumble(nint joystick, ushort low_frequency_rumble, ushort high_frequency_rumble, uint duration_ms)
+    {
+        unsafe
+        {
+            return Sdl.JoystickRumble((Joystick*)joystick, low_frequency_rumble, high_frequency_rumble, duration_ms);
+        }
+    }
+
+    public void JoystickClose(nint joystick)
+    {
+        unsafe
+        {
+            Sdl.JoystickClose((Joystick*)joystick);
+        }
+    }
+
+    public nint JoystickOpen(int device_index)
+    {
+        unsafe
+        {
+            return (nint)Sdl.JoystickOpen(device_index);
+        }
+    }
+
+    // TODO: ADD DOCS - remember to mention that a point return value of -1 means the joystick was not found.
+    public nint JoystickOpen(string guid)
+    {
+        var totalJoysticks = NumJoysticks();
+
+        for (var deviceIndex = 0; deviceIndex < totalJoysticks; deviceIndex++)
+        {
+            // Get the current device GUID for comparison
+            var currentJoystickGuid = JoystickGetDeviceGUIDString(deviceIndex);
+
+            if (currentJoystickGuid == guid)
+            {
+                return JoystickOpen(deviceIndex);
+            }
+        }
+
+        return -1;
+    }
+
+    public nint GameControllerOpen(int joystick_index)
+    {
+        unsafe
+        {
+            var controller = Sdl.GameControllerOpen(joystick_index);
+
+            return (nint)controller;
+        }
+    }
+
+    public string GameControllerName(nint gameControllerPtr)
+    {
+        unsafe
+        {
+            var name = (nint)Sdl.GameControllerName((GameController*)gameControllerPtr);
+
+            var controllerName = Marshal.PtrToStringAnsi(name);
+
+            return controllerName;
+        }
+    }
+
+    public bool GameControllerGetAttached(nint gameControllerPtr)
+    {
+        unsafe
+        {
+            var result = Sdl.GameControllerGetAttached((GameController*)gameControllerPtr);
+
+            return result == SdlBool.True;
+        }
+    }
+
+    public string JoystickName(nint joystick)
+    {
+        unsafe
+        {
+            return Marshal.PtrToStringAnsi((nint)Sdl.JoystickName((Joystick*)joystick)) ?? string.Empty;
+        }
+    }
+
+    // TODO: Look into setting the ID (GUID) into a 'Guid' type.
+    // Probably it is best to convert the string to an actual 'Guid' type in the sdl invoker.  This is where it comes from as a source.
+    public string JoystickGetDeviceGUIDString(int device_index)
+    {
+        var guid = Sdl.JoystickGetDeviceGUID(device_index);
+
+        unsafe
+        {
+            var buffer = stackalloc byte[33];
+
+            Sdl.JoystickGetGUIDString(guid, buffer, 33);
+
+            var guidChars = new ReadOnlySpan<byte>(buffer, 33);
+            var terminatorIndex = guidChars.IndexOf((byte)0);
+            var length = terminatorIndex == -1 ? 32 : terminatorIndex;
+
+            return Encoding.ASCII.GetString(guidChars[..length]);
+        }
+    }
+
+    public int GameControllerAddMapping(string mappingData)
+    {
+        // TODO: Figure out what the return int value is and choose how to handle it
+        return Sdl.GameControllerAddMapping(mappingData);
+    }
+
+    public int JoystickGetDeviceInstanceID(int device_index) => Sdl.JoystickGetDeviceInstanceID(device_index);
+
+    public bool JoystickGetAttached(nint joystick)
+    {
+        unsafe
+        {
+            return Sdl.JoystickGetAttached((Joystick*)joystick) == SdlBool.True;
+        }
+    }
+
+    public uint NumJoysticks() => (uint)Sdl.NumJoysticks();
+
+    public bool JoystickHasRumble(nint joyStickPtr)
+    {
+        unsafe
+        {
+            return Sdl.JoystickHasRumble((Joystick*)joyStickPtr) == SdlBool.True;
+        }
+    }
+
+    // NOTE: We must call this in the WgpuWindow update loop as long as we are not on macOS.
+    // If on macOS, we DO NOT CALL THIS
+    public void PumpEvents() => Sdl.PumpEvents();
+
+    public void Quit() => Sdl.Quit();
+}

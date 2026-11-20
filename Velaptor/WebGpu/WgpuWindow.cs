@@ -426,18 +426,13 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void Window_Update(double time)
     {
-        var frameTime = new FrameTime
-        {
-            ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
-        };
+        this.pushReactable.Push(PushNotifications.Update);
+
+        var frameTime = new FrameTime { ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0), };
 
         Update?.Invoke(frameTime);
 
-        this.mouseStateData = this.mouseStateData with
-        {
-            ScrollDirection = MouseScrollDirection.None,
-            ScrollWheelValue = 0,
-        };
+        this.mouseStateData = this.mouseStateData with { ScrollDirection = MouseScrollDirection.None, ScrollWheelValue = 0, };
 
         this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
     }
@@ -447,10 +442,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void Window_Render(double time)
     {
-        var frameTime = new FrameTime
-        {
-            ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0),
-        };
+        var frameTime = new FrameTime { ElapsedTime = TimeSpan.FromMilliseconds(time * 1000.0), };
 
         Draw?.Invoke(frameTime);
 
@@ -486,11 +478,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void MouseInput_MouseDown(IMouse mouse, SilkMouseButton button)
     {
-        this.mouseStateData = this.mouseStateData with
-        {
-            Button = (VelaptorMouseButton)button,
-            ButtonIsDown = true,
-        };
+        this.mouseStateData = this.mouseStateData with { Button = (VelaptorMouseButton)button, ButtonIsDown = true, };
 
         this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
     }
@@ -500,11 +488,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void MouseInput_MouseUp(IMouse mouse, SilkMouseButton button)
     {
-        this.mouseStateData = this.mouseStateData with
-        {
-            Button = (VelaptorMouseButton)button,
-            ButtonIsDown = false,
-        };
+        this.mouseStateData = this.mouseStateData with { Button = (VelaptorMouseButton)button, ButtonIsDown = false, };
 
         this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
     }
@@ -533,11 +517,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
     /// </summary>
     private void MouseMove_MouseMove(IMouse mouse, Vector2 position)
     {
-        this.mouseStateData = this.mouseStateData with
-        {
-            X = (int)position.X,
-            Y = (int)position.Y,
-        };
+        this.mouseStateData = this.mouseStateData with { X = (int)position.X, Y = (int)position.Y, };
 
         this.mouseReactable.Push(PushNotifications.MouseStateChangedId, this.mouseStateData);
     }
@@ -611,7 +591,7 @@ internal sealed class WgpuWindow : VelaptorIWindow
         var mainDisplay = this.systemDisplayService.MainDisplay;
 
         float ToDisplayScale(float value) => value * mainDisplay.HorizontalDPI /
-                   (this.platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f);
+                                             (this.platform.CurrentPlatform == OSPlatform.OSX ? 72f : 96f);
 
         var halfWidth = ToDisplayScale(Width / 2f);
         var halfHeight = ToDisplayScale(Height / 2f);

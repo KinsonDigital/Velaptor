@@ -30,10 +30,13 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
     // TODO: Implement this
     /// <inheritdoc/>
     public int TotalDevices { get; }
-    
+
     // TODO: Implement this
     /// <inheritdoc/>
-    public IReadOnlyCollection<string> ConnectedDevices { get; }
+    public IReadOnlyCollection<string> ConnectedDeviceNames { get; }
+
+    // TODO: Implement this
+    public IReadOnlyCollection<string> ConnectedDeviceIds { get; }
 
     /// <summary>
     /// Gets the current state of the keyboard.
@@ -52,4 +55,6 @@ internal sealed class Keyboard : IAppInput<KeyboardState>
 
         return keyboardState;
     }
+
+    public KeyboardState GetState(string id) => throw new NotImplementedException();
 }

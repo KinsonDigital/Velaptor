@@ -48,7 +48,10 @@ internal sealed class Mouse : IAppInput<MouseState>
 
     // TODO: Implement this
     /// <inheritdoc/>
-    public IReadOnlyCollection<string> ConnectedDevices { get; }
+    public IReadOnlyCollection<string> ConnectedDeviceNames { get; }
+
+    // TODO: Implement this
+    public IReadOnlyCollection<string> ConnectedDeviceIds { get; }
 
     /// <summary>
     /// Gets the current state of the mouse.
@@ -61,6 +64,8 @@ internal sealed class Mouse : IAppInput<MouseState>
             this.middleMouseButton.isDown,
             this.mouseScrollDirection,
             this.scrollWheelValue);
+
+    public MouseState GetState(string id) => throw new NotImplementedException();
 
     /// <summary>
     /// Updates the state of the mouse.
