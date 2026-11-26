@@ -131,6 +131,23 @@ internal interface IGlfwInvoker : IDisposable
     /// </remarks>
     GlfwVideoMode GetVideoMode(nint monitor);
 
+    /// <summary>
+    /// Returns the SDL compatible GUID, as a UTF-8 encoded hexadecimal string, of the specified joystick.
+    /// </summary>
+    /// <param name="jid">The joystick whose GUID will be returned.</param>
+    /// <returns>The UTF-8 encoded hexadecimal string of the GUID, or an empty string if the joystick is not present.</returns>
+    /// <remarks>
+    /// <para>
+    /// The GUID identifies the model/type of the device, not the individual physical unit.
+    /// Two controllers of the same hardware model will report the same GUID.
+    /// </para>
+    /// <para>
+    /// This is useful for identifying the same controller across libraries, such as matching
+    /// GLFW controllers with SDL joystick devices for rumble support.
+    /// </para>
+    /// </remarks>
+    string GetJoystickGUID(int jid);
+
     /// <inheritdoc cref="Silk.NET.GLFW.Glfw.UpdateGamepadMappings" />
     void UpdateGamepadMappings(string newMappings);
 }

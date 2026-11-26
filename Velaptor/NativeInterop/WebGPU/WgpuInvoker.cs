@@ -2,6 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+/*
+ * RESOURCES:
+ * https://webgpu.org/
+ * https://wgpu.rs/
+ * https://github.com/gfx-rs/wgpu
+ */
+
 namespace Velaptor.NativeInterop.WebGpu;
 
 using System.Diagnostics.CodeAnalysis;
@@ -466,18 +473,12 @@ internal sealed class WgpuInvoker : IWgpuInvoker
                 var entries = stackalloc BindGroupEntry[1];
                 entries[0] = new BindGroupEntry
                 {
-                    Binding = 0,
-                    Buffer = (WebGpuBuffer*)buffer.DangerousGetHandle(),
-                    Offset = offset,
-                    Size = size,
+                    Binding = 0, Buffer = (WebGpuBuffer*)buffer.DangerousGetHandle(), Offset = offset, Size = size,
                 };
 
                 var desc = new BindGroupDescriptor
                 {
-                    Label = (byte*)labelPtr,
-                    Layout = (BindGroupLayout*)layout.DangerousGetHandle(),
-                    EntryCount = 1,
-                    Entries = entries,
+                    Label = (byte*)labelPtr, Layout = (BindGroupLayout*)layout.DangerousGetHandle(), EntryCount = 1, Entries = entries,
                 };
 
                 var handle = (nint)Wgpu.DeviceCreateBindGroup((Device*)device.DangerousGetHandle(), in desc);
@@ -693,10 +694,7 @@ internal sealed class WgpuInvoker : IWgpuInvoker
         {
             var colorAttachment = new RenderPassColorAttachment
             {
-                View = (TextureView*)textureView.DangerousGetHandle(),
-                LoadOp = loadOp,
-                StoreOp = storeOp,
-                ClearValue = new Color(r, g, b, a),
+                View = (TextureView*)textureView.DangerousGetHandle(), LoadOp = loadOp, StoreOp = storeOp, ClearValue = new Color(r, g, b, a),
             };
 
             var passDesc = new RenderPassDescriptor { ColorAttachmentCount = 1, ColorAttachments = &colorAttachment, };
@@ -719,10 +717,7 @@ internal sealed class WgpuInvoker : IWgpuInvoker
         {
             var colorAttachment = new RenderPassColorAttachment
             {
-                View = (TextureView*)textureView.DangerousGetHandle(),
-                LoadOp = loadOp,
-                StoreOp = storeOp,
-                ClearValue = new Color(r, g, b, a),
+                View = (TextureView*)textureView.DangerousGetHandle(), LoadOp = loadOp, StoreOp = storeOp, ClearValue = new Color(r, g, b, a),
             };
             var passDesc = new RenderPassDescriptor { ColorAttachmentCount = 1, ColorAttachments = &colorAttachment, };
             var handle = (nint)Wgpu.CommandEncoderBeginRenderPass((CommandEncoder*)encoder.DangerousGetHandle(), in passDesc);
@@ -884,7 +879,8 @@ internal sealed class WgpuInvoker : IWgpuInvoker
     }
 
     /// <inheritdoc/>
-    public void QueueWriteTexture(SafeQueueHandle queue, SafeTextureHandle textureHandle, uint width, uint height, uint alignedBytesPerRow, byte[] data)
+    public void QueueWriteTexture(SafeQueueHandle queue, SafeTextureHandle textureHandle, uint width, uint height, uint alignedBytesPerRow,
+        byte[] data)
     {
         unsafe
         {
@@ -892,7 +888,10 @@ internal sealed class WgpuInvoker : IWgpuInvoker
             {
                 var destination = new ImageCopyTexture
                 {
-                    Texture = (Texture*)textureHandle.DangerousGetHandle(), MipLevel = 0, Origin = new Origin3D { X = 0, Y = 0, Z = 0 }, Aspect = TextureAspect.All,
+                    Texture = (Texture*)textureHandle.DangerousGetHandle(),
+                    MipLevel = 0,
+                    Origin = new Origin3D { X = 0, Y = 0, Z = 0 },
+                    Aspect = TextureAspect.All,
                 };
                 var dataLayout = new TextureDataLayout { Offset = 0, BytesPerRow = alignedBytesPerRow, RowsPerImage = height, };
                 var copySize = new Extent3D { Width = width, Height = height, DepthOrArrayLayers = 1, };

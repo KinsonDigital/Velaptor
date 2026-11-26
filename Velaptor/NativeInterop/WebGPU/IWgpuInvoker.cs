@@ -2,6 +2,13 @@
 // Copyright (c) KinsonDigital. All rights reserved.
 // </copyright>
 
+/*
+ * RESOURCES:
+ * https://webgpu.org/
+ * https://wgpu.rs/
+ * https://github.com/gfx-rs/wgpu
+ */
+
 namespace Velaptor.NativeInterop.WebGpu;
 
 using Handles;
@@ -492,7 +499,8 @@ internal interface IWgpuInvoker
     /// <param name="format">The index format.</param>
     /// <param name="offset">The byte offset into the buffer.</param>
     /// <param name="size">The size of the index buffer data in bytes.</param>
-    void RenderPassEncoderSetIndexBuffer(SafeRenderPassEncoderHandle renderPassEncoder, nint buffer, IndexFormat format, ulong offset, ulong size);
+    void RenderPassEncoderSetIndexBuffer(SafeRenderPassEncoderHandle renderPassEncoder, nint buffer, IndexFormat format, ulong offset,
+        ulong size);
 
     /// <summary>
     /// Issues an indexed draw call.
@@ -503,7 +511,8 @@ internal interface IWgpuInvoker
     /// <param name="firstIndex">The first index offset.</param>
     /// <param name="baseVertex">The base vertex offset.</param>
     /// <param name="firstInstance">The first instance index.</param>
-    void RenderPassEncoderDrawIndexed(SafeRenderPassEncoderHandle renderPassEncoder, uint indexCount, uint instanceCount, uint firstIndex, int baseVertex, uint firstInstance);
+    void RenderPassEncoderDrawIndexed(SafeRenderPassEncoderHandle renderPassEncoder, uint indexCount, uint instanceCount, uint firstIndex,
+        int baseVertex, uint firstInstance);
 
     /// <summary>
     /// Sets a bind group on a render pass encoder.
@@ -513,7 +522,8 @@ internal interface IWgpuInvoker
     /// <param name="bindGroup">The bind group handle.</param>
     /// <param name="dynamicOffsetCount">The number of dynamic offsets.</param>
     /// <param name="dynamicOffsets">Handle to the dynamic offsets.</param>
-    void RenderPassEncoderSetBindGroup(SafeRenderPassEncoderHandle renderPassEncoder, uint groupIndex, SafeBindGroupHandle bindGroup, nuint dynamicOffsetCount, nint dynamicOffsets);
+    void RenderPassEncoderSetBindGroup(SafeRenderPassEncoderHandle renderPassEncoder, uint groupIndex, SafeBindGroupHandle bindGroup,
+        nuint dynamicOffsetCount, nint dynamicOffsets);
 
     /// <summary>
     /// Writes a managed float array to a GPU buffer. The <c>fixed</c> pinning

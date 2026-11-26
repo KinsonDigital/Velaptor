@@ -103,6 +103,9 @@ internal sealed class GlfwInvoker : IGlfwInvoker
     /// <inheritdoc/>
     public void UpdateGamepadMappings(string newMappings) => GlfwProvider.GLFW.Value.UpdateGamepadMappings(newMappings);
 
+    /// <inheritdoc/>
+    public string GetJoystickGUID(int jid) => this.glfw.GetJoystickGUID(jid) ?? string.Empty;
+
     /// <inheritdoc cref="IDisposable.Dispose"/>
     public void Dispose()
     {

@@ -656,87 +656,117 @@ public enum MouseScrollDirection
 /// <summary>
 /// Represents the different buttons on a game controller.
 /// </summary>
+// TODO: This is for glfw but we use sdl now.  Remove this
 public enum ControllerButton
 {
     /// <summary>
-    /// Indicates that the input backend was unable to determine a button name for the button in question, or it does not support it.
-    /// </summary>
-    Unknown = -1,
-
-    /// <summary>
     /// The 'A' button.
     /// </summary>
-    A = 0,
+    South = 0x0,
 
     /// <summary>
     /// The 'B' button.
     /// </summary>
-    B,
+    East = 0x1,
 
     /// <summary>
     /// The 'X' button.
     /// </summary>
-    X,
+    West = 0x2,
 
     /// <summary>
     /// The 'Y' button.
     /// </summary>
-    Y,
-
-    /// <summary>
-    /// The left bumper.
-    /// </summary>
-    LeftBumper,
-
-    /// <summary>
-    /// The right bumper.
-    /// </summary>
-    RightBumper,
+    North = 0x3,
 
     /// <summary>
     /// The back button.
     /// </summary>
-    Back,
+    Back = 0x4,
+
+    /// <summary>
+    /// The guide button.
+    /// </summary>
+    /// <remarks>
+    /// This is usually the XBox or PlayStation logo button on XBox and PlayStation controllers.
+    /// NOTE: Some controllers have the guide button, button it is not a logo. 
+    /// </remarks>
+    Guide = 0x5,
 
     /// <summary>
     /// The start button.
     /// </summary>
-    Start,
+    Start = 0x6,
 
     /// <summary>
-    /// The home button.
+    /// Clicking the left joystick.
     /// </summary>
-    Home,
+    LeftStick = 0x7,
 
     /// <summary>
-    /// Clicking the left stick.
+    /// Clicking the right joystick.
     /// </summary>
-    LeftStick,
+    RightStick = 0x8,
 
     /// <summary>
-    /// Clicking the right stick.
+    /// The left shoulder/bumper.
     /// </summary>
-    RightStick,
+    LeftShoulder = 0x9,
 
     /// <summary>
-    /// Up on the D-Pad.
+    /// The right shoulder/bumper.
     /// </summary>
-    DPadUp,
-
-    /// <summary>
-    /// Right on the D-Pad.
-    /// </summary>
-    DPadRight,
-
-    /// <summary>
-    /// Down on the D-Pad.
-    /// </summary>
-    DPadDown,
+    RightShoulder = 0xA,
 
     /// <summary>
     /// Left on the D-Pad.
     /// </summary>
-    DPadLeft,
+    DPadLeft = 0xD,
+
+    /// <summary>
+    /// Up on the D-Pad.
+    /// </summary>
+    DPadUp = 0xB,
+
+    /// <summary>
+    /// Right on the D-Pad.
+    /// </summary>
+    DPadRight = 0xE,
+
+    /// <summary>
+    /// Down on the D-Pad.
+    /// </summary>
+    DPadDown = 0xC,
+
+    /// <summary>
+    /// The 1 paddle.
+    /// </summary>
+    Paddle1 = 0x10,
+
+    /// <summary>
+    /// The 2 paddle.
+    /// </summary>
+    Paddle2 = 0x11,
+
+    /// <summary>
+    /// The 3 paddle.
+    /// </summary>
+    Paddle3 = 0x12,
+
+    /// <summary>
+    /// The 4 paddle.
+    /// </summary>
+    Paddle4 = 0x13,
+
+    /// <summary>
+    /// The miscellaneous button.
+    /// </summary>
+    Misc1 = 0xF,
+
+    /// <summary>
+    /// The touchpad.
+    /// </summary>
+    TouchPad = 0x14,
 }
 
 /// <summary>

@@ -22,6 +22,7 @@ public sealed class Label : Control
     private IFont? font;
     private string text = string.Empty;
     private bool mouseClickDisabled;
+    private uint fontSize = 12;
 
     public EventHandler<LabelClickEventArgs>? Click;
 
@@ -33,8 +34,7 @@ public sealed class Label : Control
             SubscriptionIds.OverDropDownItemId,
             nameof(SubscriptionIds.OverDropDownItemId),
             (data) => this.mouseClickDisabled = data.IsExpanded,
-            () => this.subscription?.Dispose()
-        );
+            () => this.subscription?.Dispose());
 
         this.shapeRenderer = RendererFactory.CreateShapeRenderer();
         this.textRenderer = RendererFactory.CreateTextRenderer();
@@ -82,6 +82,26 @@ public sealed class Label : Control
 
     public Color TextColor { get; set; } = Color.White;
 
+    public uint FontSize
+    {
+        get => this.fontSize;
+        set
+        {
+            this.fontSize = value;
+
+            if (!IsLoaded)
+            {
+                return;
+            }
+
+            this.contentManager.Unload(this.font);
+            this.font = this.contentManager.LoadFont(DefaultBoldFontName, this.fontSize);
+            TextSize = this.font.Measure(this.text);
+            Width = (int)TextSize.Width;
+            Height = (int)TextSize.Height;
+        }
+    }
+
     public Color BackgroundColor { get; set; } = Color.Transparent;
 
     public bool IsMouseOver { get; private set; }
@@ -93,7 +113,6 @@ public sealed class Label : Control
         {
             if (value)
             {
-
             }
             else
             {
@@ -110,7 +129,7 @@ public sealed class Label : Control
             return;
         }
 
-        this.font = this.contentManager.LoadFont(DefaultBoldFontName, 12);
+        this.font = this.contentManager.LoadFont(DefaultBoldFontName, FontSize);
         TextSize = this.font.Measure(this.text);
         Width = (int)TextSize.Width;
         Height = (int)TextSize.Height;

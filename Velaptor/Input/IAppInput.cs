@@ -21,11 +21,23 @@ public interface IAppInput<out TState>
     /// <summary>
     /// Gets the list of connected devices.
     /// </summary>
-    IReadOnlyCollection<string> ConnectedDevices { get; }
+    IReadOnlyCollection<string> ConnectedDeviceNames { get; }
 
     /// <summary>
-    /// Returns the current state of the input.
+    /// Gets the list of connected device IDs.
+    /// </summary>
+    IReadOnlyCollection<int> ConnectedDeviceIds { get; }
+
+    /// <summary>
+    /// Returns the current state of the first connected input.
     /// </summary>
     /// <returns>The state of the input.</returns>
     TState GetState();
+
+    /// <summary>
+    /// Returns the current state of the input that matches the given <paramref name="id"/>.
+    /// </summary>
+    /// <param name="id">The unique device ID of the input.</param>
+    /// <returns>The state of the input.</returns>
+    TState GetState(int id);
 }
