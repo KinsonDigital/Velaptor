@@ -40,13 +40,30 @@ public record struct GameControllerState
     /// </summary>
     internal GameCtrlTriggerState RightGameCtrlTrigger = default;
 
+    // TODO: ADD doCS
+    public float HeavyRumbleIntensity { get; internal set; }
+
+    public float LightRumbleIntensity { get; internal set; }
+
+    public bool Enabled { get; internal set; }
+
+    public bool IsConnected { get; internal set; }
+
+    // TODO: Look into setting the ID (GUID) into a 'Guid' type.  For the rest of the references in GameController and GameControllerRumble types as well
+    // Probably it is best to convert the string to an actual 'Guid' type in the sdl invoker.  This is where it comes from as a source.
+
+    /// <summary>
+    /// The game controller device ID.
+    /// </summary>
+    /// <remarks>Returns -1 if the device state has no ID.</remarks>
+    public int Id { get; internal set; }
+
+    public string Name { get; internal set; }
+
     /// <summary>
     /// Initializes a new instance of the <see cref="GameControllerState"/> struct.
     /// </summary>
-    public GameControllerState()
-    {
-        InitButtonStates();
-    }
+    public GameControllerState() => InitButtonStates();
 
     /// <summary>
     /// Returns a list of all the buttons that are currently in the down position.
@@ -79,6 +96,8 @@ public record struct GameControllerState
 
         return ButtonStates.TryGetValue(button, out var value) && value;
     }
+
+    // TODO: Add IsButtonUp method
 
     /// <summary>
     /// Gets the direction/angle of the given <paramref name="thumbstick"/> in degrees.
@@ -138,7 +157,7 @@ public record struct GameControllerState
             ? this.LeftGameCtrlTrigger.Position
             : this.RightGameCtrlTrigger.Position;
 
-        return triggerPos.MapValue(-1f, 1f, 0f, 100f);
+        return Enabled ? triggerPos.MapValue(0f, 1f, 0f, 100f) : 0f;
     }
 
     /// <summary>
@@ -155,10 +174,10 @@ public record struct GameControllerState
         switch (thumbstick)
         {
             case Thumbsticks.Left:
-                return this.LeftGameCtrlThumbstick.X;
+                return Enabled ? this.LeftGameCtrlThumbstick.X : 0f;
             case Thumbsticks.Right:
             default:
-                return this.RightGameCtrlThumbstick.X;
+                return Enabled ? this.RightGameCtrlThumbstick.X : 0f;
         }
     }
 
@@ -176,10 +195,30 @@ public record struct GameControllerState
         switch (thumbstick)
         {
             case Thumbsticks.Left:
-                return this.LeftGameCtrlThumbstick.Y;
+                return Enabled ? this.LeftGameCtrlThumbstick.Y : 0f;
             case Thumbsticks.Right:
             default:
-                return this.RightGameCtrlThumbstick.Y;
+                return Enabled ? this.RightGameCtrlThumbstick.Y : 0f;
+        }
+    }
+
+    /// <summary>
+    /// Gets the position of the <paramref name="thumbstick"/> as a value between <c>0</c> and <c>1</c>.
+    /// </summary>
+    /// <param name="thumbstick">The <paramref name="thumbstick"/> to check.</param>
+    /// <returns>
+    ///     The position represents the distance from the center pushed to the maximum value
+    ///     no matter what direction the thumbstick is pushed.
+    /// </returns>
+    public float GetThumbstickPosition(Thumbsticks thumbstick)
+    {
+        switch (thumbstick)
+        {
+            case Thumbsticks.Left:
+                return Enabled ? this.LeftGameCtrlThumbstick.Position : 0f;
+            case Thumbsticks.Right:
+            default:
+                return Enabled ? this.RightGameCtrlThumbstick.Position : 0f;
         }
     }
 

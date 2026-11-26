@@ -23,6 +23,7 @@ using Hardware.Services;
 using Input;
 using NativeInterop.FreeType;
 using NativeInterop.GLFW;
+using NativeInterop.SDL;
 using NativeInterop.Services;
 using NativeInterop.WebGpu;
 using ReactableData;
@@ -87,8 +88,6 @@ internal static class IoC
             return;
         }
 
-        var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
-
         // Get all the registered types that are capable of being disposed
         var disposableRegistrations = IoCContainer.GetDisposableRegistrations();
 
@@ -97,7 +96,11 @@ internal static class IoC
             IoCContainer.DisposeOfType(regType);
         }
 
+        var sdl = IoCContainer.GetInstance<ISdlInvoker>();
+        sdl.Sdl.Dispose();
+
         // NOTE: It is very important to dispose of wgpu last
+        var wgpu = IoCContainer.GetInstance<IWgpuInvoker>();
         wgpu.Wgpu.Dispose();
     }
 
@@ -115,6 +118,8 @@ internal static class IoC
         SetupBuffers();
 
         SetupRendering();
+
+        SetupInput();
 
         SetupFactories();
 
@@ -142,14 +147,22 @@ internal static class IoC
         IoCContainer.Register<IComparer<RenderItem<LineBatchItem>>, RenderItemComparer<LineBatchItem>>(Lifestyle.Singleton);
 
         IoCContainer.Register<IBatchingManager, BatchingManager>(Lifestyle.Singleton);
-        IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
-        IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
-        IoCContainer.Register<IAppInput<GameControllerState>, GameController>(Lifestyle.Singleton);
         IoCContainer.Register<IFrameMetricsTracker>(() => new FrameMetricsTracker(), Lifestyle.Singleton);
 
         IoCContainer.RegisterSingleton(() => new HttpClient { Timeout = TimeSpan.FromSeconds(5) });
 
         isInitialized = true;
+    }
+
+    /// <summary>
+    /// Sets up various input capabilities.
+    /// </summary>
+    private static void SetupInput()
+    {
+        IoCContainer.Register<IAppInput<KeyboardState>, Keyboard>(Lifestyle.Singleton);
+        IoCContainer.Register<IAppInput<MouseState>, Mouse>(Lifestyle.Singleton);
+        IoCContainer.Register<IGameController, GameController>(Lifestyle.Singleton);
+        IoCContainer.Register<IGameControllerRumble, GameControllerRumble>(Lifestyle.Singleton);
     }
 
     /// <summary>
@@ -175,6 +188,7 @@ internal static class IoC
 
         IoCContainer.Register<IWgpuInvoker, WgpuInvoker>(Lifestyle.Singleton);
         IoCContainer.Register<IGlfwInvoker, GlfwInvoker>(Lifestyle.Singleton);
+        IoCContainer.Register<ISdlInvoker, SdlInvoker>(Lifestyle.Singleton);
         IoCContainer.Register<IFreeTypeInvoker, FreeTypeInvoker>(Lifestyle.Singleton);
 
         IoCContainer.Register<GlfwDisplays>(Lifestyle.Singleton);
